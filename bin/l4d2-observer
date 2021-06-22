@@ -19,7 +19,7 @@ Types:
 # Notes:
 #   srcds_linux defaults to ~/Steam/L4D2-server
 HELP
-HelpParser.int? :ff, :exposure, :kicks
+HelpParser.int? :ff, :exposure, :kicks, :pity
 
 SERVER_DIR = File.expand_path(OPTIONS.srcds_dir || '~/Steam/L4D2-server')
 unless File.exist? SERVER_DIR

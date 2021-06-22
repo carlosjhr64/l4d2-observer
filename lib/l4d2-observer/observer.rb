@@ -144,7 +144,7 @@ class Observer
     when '---- Host_Changelevel ----'
       PUTS.terminal line, :yellow
       SURVIVOR.clear_level
-      SURVIVOR.names.each{|name| SURVIVOR.increment_pardons(name)}
+      SURVIVOR.names.each{|name| SURVIVOR.increment_pardons(name) if SURVIVOR.playtime(name) > VOTE_INTERVAL}
     when "Initializing Director's script"
       PUTS.terminal line, :yellow
       SURVIVOR.names.each do |name|
