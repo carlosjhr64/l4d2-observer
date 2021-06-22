@@ -12,14 +12,15 @@ Usage:
 Options:
   --ff=N      \tFF limit
   --exposure=N\tExposure limit
-  --kicks=N   \tKicks limit
+  --pardons=N \tPardons limit
   --pity=N    \tPity limit
+  --kicks=N   \tKicks limit
 Types:
   N   /^\\d$/
 # Notes:
 #   srcds_linux defaults to ~/Steam/L4D2-server
 HELP
-HelpParser.int? :ff, :exposure, :kicks, :pity
+HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
 SERVER_DIR = File.expand_path(OPTIONS.srcds_dir || '~/Steam/L4D2-server')
 unless File.exist? SERVER_DIR
@@ -37,6 +38,7 @@ end
 
 EXCESSIVE_LIMIT = OPTIONS.ff       || 3
 EXPOSURE_LIMIT  = OPTIONS.exposure || 3
+PARDONS_LIMIT   = OPTIONS.exposure || 3
 EXCESSIVE_KICKS = OPTIONS.kicks    || 3
 PITY_LIMIT      = OPTIONS.pity     || 3
 

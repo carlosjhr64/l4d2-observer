@@ -8,11 +8,11 @@ def compile(file, writer)
     while line = reader.gets
       # require_relative
       if line =~ /^\s*require_relative\s+["'](.*)["']\s*$/
-        writer.puts "# #{line}"
+        writer.puts "# START: #{line}"
         dir = File.dirname file
         path = File.expand_path File.join dir, $1
-        writer.puts "# => #{path}"
         compile(path, writer)
+        writer.puts "# END: #{line}"
       else
         writer.puts line
       end
