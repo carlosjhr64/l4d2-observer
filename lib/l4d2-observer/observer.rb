@@ -85,7 +85,8 @@ class Observer
   def process(line)
     cmd = nil
     case line
-    when /^Client "(.*)" connected \(([^:]*):.*\)\.$/
+    when /Client "(.*)" connected \(([^:]*):.*\)\.$/
+      # Could not anchor start of line bc previous line error joins sometimes.
       SURVIVOR.add $1, $2
       PUTS.terminal line, :cyan
       PUTS.console 'users'
