@@ -121,8 +121,8 @@ class Survivor
       if id == id(name)
         false
       else
-        # Treat weird name as name change
-        return name if name.length > 64 or name.chars.count{_1=~/\w/} < 3
+        # name issues...
+        return name unless name.length < 65 and name=~/^[[:print:]]+$/
         return name if SURVIVOR.shared_ip?(name)
         set_id(name, id)
         set_timestamp name, Time.now

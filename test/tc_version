@@ -3,14 +3,9 @@ require 'test/unit'
 
 class TestVersion < Test::Unit::TestCase
   def test_version
-    version = '0.0.0'
+    version = '0.1.210623'
     assert_equal(version, `egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' lib/*.rb`.split.first)
-    if File.exist?('data/VERSION')
-      assert_equal(version, File.read('data/VERSION').strip)
-    end
-    if executable = `ls bin/* 2> /dev/null`.split.first
-      assert_equal(version, `#{executable} --version`.strip)
-    end
+    assert_equal(version, `l4d2-observer --version`.strip)
     if gemspec = `ls *.gemspec 2> /dev/null`.split.first
       assert_equal(version, `egrep -o '[0-9]+\\.[0-9]+\\.[0-9]+' #{gemspec}`.split.first)
     end
