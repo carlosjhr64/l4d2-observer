@@ -122,7 +122,7 @@ class Survivor
         false
       else
         # name issues...
-        return name unless name.length < 65 and name=~/^[[:print:]]+$/ and name.chars.count{_1=~/\w/} < 2
+        return name unless name.length < 65 and name=~/^[[:print:]]+$/ and name.chars.count{_1=~/\w/} > 1
         return name if SURVIVOR.shared_ip?(name)
         set_id(name, id)
         set_timestamp name, Time.now
