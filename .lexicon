@@ -149,6 +149,7 @@ string
 String
 strip
 Struct
+substring
 sum
 survivor
 Survivor

@@ -228,6 +228,11 @@ class Observer
         @trace = @verbose = false
       when 'quit'
         PUTS.terminal "Don't say quit, say exit please."
+      when /^kick\s+(\w+)$/
+        substring = $1
+        if name = SURVIVOR.names.reverse.detect{_1.include? substring}
+          PUTS.console kick!(name, 'kicked for... IDK... idle?') unless name == 'Caprichozo'
+        end
       else
         @trace = true # will want to see the output
         PUTS.console cmd
@@ -245,7 +250,7 @@ class Observer
         @difficulty = Time.now
         PUTS.console 'z_difficulty'
       elsif now - @rankings > RANDOM_TIME
-        PUTS.console rankings
+        PUTS.console rankings unless SURVIVOR.none?
       end
     end
   end
