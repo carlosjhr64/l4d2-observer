@@ -9,9 +9,10 @@ class Observer
   def rankings
     survivors_tally = SURVIVOR.names.map{|name|
       display = name.gsub(/\W+/, X)
-      display = name.gsub(/[^[[:alpha:]]]+/, X) if display.length < 3
-      display = display.gsub(X, '') if display.length > 14
-      display = display[0...14] if display.length > 14
+      if display.length > 14
+        display = display.gsub(X, '')
+        display = display[0...13]+X if display.length > 14
+      end
       if name == @pardoned
         @pardoned = nil
         display = "!#{display}!"
