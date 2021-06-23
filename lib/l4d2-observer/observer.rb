@@ -19,6 +19,7 @@ class Observer
       end
       [display, SURVIVOR.ff(name), SURVIVOR.exposure(name), SURVIVOR.pardons(name)].join('-')
     }.join('  ')
+    @rankings = Time.now
     say survivors_tally
   end
 
@@ -237,15 +238,21 @@ class Observer
   end
 
   def handle_checks
-    sleep(VOTE_INTERVAL + rand(RANDOM_TIME))
     loop do
-      PUTS.console 'z_difficulty'
-      sleep(VOTE_INTERVAL + rand(RANDOM_TIME))
+      sleep rand RANDOM_TIME
+      now = Time.now
+      if now - @difficulty > VOTE_INTERVAL
+        @difficulty = Time.now
+        PUTS.console 'z_difficulty'
+      elsif now - @rankings > RANDOM_TIME
+        PUTS.console rankings
+      end
     end
   end
 
   def initialize
     @pardoned = nil
+    @difficulty = @rankings = Time.now
     @trace = @verbose = false
     PTY.spawn(CMD) do |reader, writer, pid|
       PUTS.console = writer
