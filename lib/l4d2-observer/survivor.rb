@@ -178,6 +178,8 @@ class Survivor
     decrement_ff_for_all(parf, except:newcomer)
     parx = names.select{_1!=newcomer}.map{exposure(_1)}.sort.first
     decrement_exposure_for_all(parx, except:newcomer)
+    parp = names.select{_1!=newcomer}.map{pity(_1)}.sort.first
+    decrement_pity_for_all(parp, except:newcomer)
   end
 
   def clear_level

@@ -27,6 +27,7 @@ decrement_exposure_for_all
 decrement_ff
 decrement_ff_for_all
 decrement_pardons
+decrement_pity_for_all
 delete
 demerits
 demote
@@ -107,6 +108,7 @@ open
 pardons
 PARDONS_LIMIT
 parf
+parp
 parx
 pass
 pid
