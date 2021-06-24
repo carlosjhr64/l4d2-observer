@@ -177,7 +177,7 @@ class Observer
       PUTS.terminal line, :red
       lvp = SURVIVOR.lvp
       cmd = kick!(lvp, 'kicked for potential vote') if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
-    when /^Caprichozo: !([12])$/
+    when /^Caprichozo: !idle([12])$/
       PUTS.terminal line, :red
       if name = SURVIVOR.names[-$1.to_i] and name != 'Caprichozo'
         cmd = kick!(name, 'kicked for idle')
