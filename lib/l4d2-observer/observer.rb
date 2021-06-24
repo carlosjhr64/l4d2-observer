@@ -105,7 +105,7 @@ class Observer
         cmd = kickid(id, 'kicked for name registration issue')
       when TrueClass
         PUTS.terminal line, :yellow
-        SURVIVOR.balance_rankings
+        SURVIVOR.balance_rankings(survivor)
         if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
           cmd = say "#{survivor} is a troll!"
         else
