@@ -5,7 +5,7 @@
 #   Exe build: 01:00:42 May 20 2021 (8230) (550)
 
 require 'help_parser'
-OPTIONS = HelpParser['0.1.210623',<<HELP]
+OPTIONS = HelpParser['0.1.210624',<<HELP]
 ### L4D2 Friendly Fire Observer ###
 Usage:
   l4d2-observer [:options+] [<srcds_dir>]

@@ -68,6 +68,7 @@ increment_pardons
 increment_pity
 index
 info
+initial
 initialize
 invalid
 ip
@@ -153,7 +154,6 @@ string
 String
 strip
 Struct
-substring
 sum
 survivor
 Survivor

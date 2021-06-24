@@ -177,6 +177,11 @@ class Observer
       PUTS.terminal line, :red
       lvp = SURVIVOR.lvp
       cmd = kick!(lvp, 'kicked for potential vote') if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
+    when /^Caprichozo: !([12])$/
+      PUTS.terminal line, :red
+      if name = SURVIVOR.names[-$1.to_i] and name != 'Caprichozo'
+        cmd = kick!(name, 'kicked for idle')
+      end
     else
       if name = SURVIVOR.names.reverse.detect{|name| line.start_with?(name+': ') or line.include?(' '+name+': ')}
         PUTS.terminal line, :red
@@ -229,10 +234,10 @@ class Observer
         @trace = @verbose = false
       when 'quit'
         PUTS.terminal "Don't say quit, say exit please."
-      when /^kick\s+(\w+)$/
-        substring = $1
-        if name = SURVIVOR.names.reverse.detect{_1.include? substring}
-          PUTS.console kick!(name, 'kicked for... IDK... idle?') unless name == 'Caprichozo'
+      when /^!kick\s+(\S.*)$/
+        initial = $1
+        if name = SURVIVOR.names.reverse.detect{_1.start_with? initial}
+          PUTS.console kick!(name, 'kicked for idle') unless name == 'Caprichozo'
         end
       else
         @trace = true # will want to see the output
