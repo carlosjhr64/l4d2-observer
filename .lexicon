@@ -6,6 +6,7 @@ attacker
 attribute
 attr_writer
 backtrace
+balance_rankings
 black
 BOT
 c
@@ -96,6 +97,7 @@ n
 name
 names
 new
+newcomer
 no_less_than_zero
 none
 now
@@ -134,6 +136,7 @@ reverse
 Ruby30
 run
 say
+select
 set_exposure
 set_ff
 set_id
@@ -142,6 +145,7 @@ set_timestamp
 shared_ip
 shift
 sleep
+sort
 spawn
 split
 start_with

@@ -81,11 +81,6 @@ class Survivor
     @players[name] ||= (TALLY[ip] ||= Tally.new)
   end
 
-  def delete(name)
-    @active.delete name
-    @players[name].id = nil
-  end
-
   def demote(name)
     if index = @active.index(name) and @active.length > index+1
       @active[index], @active[index+1] = @active[index+1], @active[index]
@@ -111,6 +106,13 @@ class Survivor
       end
     CODE
   end
+
+  def delete(name)
+    @active.delete name
+    set_id(name, nil)
+    set_pardons(name, 0)
+  end
+
 
   def name(id)
     @players.detect{_1[1].id==id}&.first
@@ -169,6 +171,13 @@ class Survivor
   def tallies(attacker, victim)
     increment_ff attacker, demerits(victim)
     increment_exposure victim, demerits(attacker)
+  end
+
+  def balance_rankings(newcomer)
+    parf = names.select{_1!=newcomer}.map{ff(_1)}.sort.first
+    decrement_ff_for_all(parf, except:newcomer)
+    parx = names.select{_1!=newcomer}.map{exposure(_1)}.sort.first
+    decrement_exposure_for_all(parx, except:newcomer)
   end
 
   def clear_level
