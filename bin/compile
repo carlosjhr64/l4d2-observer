@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 
 SOURCE = './bin/l4d2-observer'
-TARGET = '/home/steam/.local/bin/l4d2-observer'
+TARGET = './tmp/l4d2-observer'
+REMOTE = 'bunny@192.168.107:.local/bin/l4d2-observer'
 
 def compile(file, writer)
   File.open(file, 'r') do |reader|
@@ -23,6 +24,5 @@ end
 File.open(TARGET, 'w') do |writer|
   compile(SOURCE, writer)
 end
-system "chown steam #{TARGET}"
-system "chgrp steam #{TARGET}"
 system "chmod u+x #{TARGET}"
+system "scp #{TARGET} #{REMOTE}"
