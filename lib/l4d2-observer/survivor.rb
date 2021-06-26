@@ -87,7 +87,7 @@ class Survivor
   end
 
   # get and set
-  [:id, :timestamp, :pardons, :pity, :kicks, :ff, :exposure].each do |attribute|
+  [:ff, :exposure, :pardons, :pity, :kicks, :timestamp, :id].each do |attribute|
     eval <<-CODE
       def #{attribute}(name)
         @players[name].#{attribute}
@@ -136,7 +136,7 @@ class Survivor
   end
 
   # increment and decrement
-  [:pardons, :pity, :kicks, :ff, :exposure].each do |attribute|
+  [:ff, :exposure, :pardons, :pity, :kicks].each do |attribute|
     eval <<-CODE
       def increment_#{attribute}(name, amount=1)
         set_#{attribute}(name, #{attribute}(name)+amount)
@@ -148,7 +148,7 @@ class Survivor
   end
 
   # decrement of all
-  [:ff, :exposure].each do |attribute|
+  [:ff, :exposure, :pity].each do |attribute|
     eval <<-CODE
       def decrement_#{attribute}_for_all(amount=1, except: nil)
         @active.each{|name| decrement_#{attribute}(name, amount) unless name == except}
