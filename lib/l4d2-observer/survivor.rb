@@ -11,15 +11,6 @@ class Survivor
     'Ellis'    => true,
     'Nick'     => true,
     'Rochelle' => true,
-    # Specials
-    'Boomer'   => true,
-    'Charger'  => true,
-    'Hunter'   => true,
-    'Jockey'   => true,
-    'Smoker'   => true,
-    'Spitter'  => true,
-    'Tank'     => true,
-    'Witch'    => true,
   }
 
   TALLY = {}
@@ -126,6 +117,7 @@ class Survivor
         # name issues...
         return name unless name.length < 65 and name=~/^[[:print:]]+$/ and name.chars.count{_1=~/\w/} > 1
         return name if SURVIVOR.shared_ip?(name)
+        return name if BOT[name]
         set_id(name, id)
         set_timestamp name, Time.now
         true
