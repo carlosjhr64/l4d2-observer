@@ -1,6 +1,6 @@
 # template
 
-* [VERSION 0.1.210626](https://github.com/author/template/releases)
+* [VERSION 0.1.210627](https://github.com/author/template/releases)
 * [github](https://www.github.com/author/template)
 * [rubygems](https://rubygems.org/gems/template)
 

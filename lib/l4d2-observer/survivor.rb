@@ -87,15 +87,16 @@ class Survivor
   end
 
   # get and set
-  [:ff, :exposure, :pardons, :pity, :kicks, :timestamp, :id].each do |attribute|
-    eval <<-CODE
-      def #{attribute}(name)
-        @players[name].#{attribute}
+  ['ff', 'exposure', 'pardons', 'pity', 'kicks', 'timestamp', 'id'].each do |attribute|
+    code = <<-CODE
+      def attribute(name)
+        @players[name].attribute
       end
-      def set_#{attribute}(name, value)
-        @players[name].#{attribute} = value
+      def set_attribute(name, value)
+        @players[name].attribute = value
       end
     CODE
+    eval code.gsub('attribute', attribute)
   end
 
   def delete(name)
@@ -103,7 +104,6 @@ class Survivor
     set_id(name, nil)
     set_pardons(name, 0)
   end
-
 
   def name(id)
     @players.detect{_1[1].id==id}&.first
@@ -136,24 +136,26 @@ class Survivor
   end
 
   # increment and decrement
-  [:ff, :exposure, :pardons, :pity, :kicks].each do |attribute|
-    eval <<-CODE
-      def increment_#{attribute}(name, amount=1)
-        set_#{attribute}(name, #{attribute}(name)+amount)
+  ['ff', 'exposure', 'pardons', 'pity', 'kicks'].each do |attribute|
+    code = <<-CODE
+      def increment_attribute(name, amount=1)
+        set_attribute(name, attribute(name)+amount)
       end
-      def decrement_#{attribute}(name, amount=1)
-        set_#{attribute}(name, no_less_than_zero(#{attribute}(name)-amount))
+      def decrement_attribute(name, amount=1)
+        set_attribute(name, no_less_than_zero(attribute(name)-amount))
       end
     CODE
+    eval code.gsub('attribute', attribute)
   end
 
   # decrement of all
-  [:ff, :exposure, :pity].each do |attribute|
-    eval <<-CODE
-      def decrement_#{attribute}_for_all(amount=1, except: nil)
-        @active.each{|name| decrement_#{attribute}(name, amount) unless name == except}
+  ['ff', 'exposure', 'pity'].each do |attribute|
+    code = <<-CODE
+      def decrement_attribute_for_all(amount=1, except: nil)
+        @active.each{|name| decrement_attribute(name, amount) unless name == except}
       end
     CODE
+    eval code.gsub('attribute', attribute)
   end
 
   def demerits(name)
