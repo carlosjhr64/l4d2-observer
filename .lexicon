@@ -17,6 +17,7 @@ class
 clear_level
 cmd
 CMD
+code
 color
 console
 count
