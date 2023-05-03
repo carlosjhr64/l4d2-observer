@@ -12,7 +12,7 @@ REMOTE = 'bunny@192.168.107:.local/bin/l4d2-observer'
 
 def compile(file, writer)
   File.open(file, 'r') do |reader|
-    while line = reader.gets
+    while (line = reader.gets)
       # require_relative
       if line =~ /^\s*require_relative\s+["'](.*)["']\s*$/
         writer.puts "# START: #{line}"
