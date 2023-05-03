@@ -1,5 +1,11 @@
 #!/usr/bin/env ruby
 
+# Compiles the observer script into a single file.
+# This is done to make it easier to deploy to the server.
+# The script is compiled by recursively inlining all
+# require_relative statements.
+# The compiled script is then copied to the server.
+
 SOURCE = './bin/l4d2-observer'
 TARGET = './tmp/l4d2-observer'
 REMOTE = 'bunny@192.168.107:.local/bin/l4d2-observer'
