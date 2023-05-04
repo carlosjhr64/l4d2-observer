@@ -2,12 +2,15 @@ module L4D2Observer
 class Observer
   SURVIVOR = Survivor.new
 
+  # Server is able to display messages to all players via the 'say' command.
   def say(string)
-    %Q(say  #{string})
+    "say  #{string}"
   end
 
+  # Every time rankings change,
+  # the server displays the new rankings to all players.
   def rankings
-    survivors_tally = SURVIVOR.names.map{|name|
+    survivors_tally = SURVIVOR.names.map do |name|
       display = name.gsub(/\W+/, X)
       if display.length > 14
         display = display.gsub(X, '')
@@ -17,22 +20,27 @@ class Observer
         @pardoned = nil
         display = "!#{display}!"
       end
-      [display, SURVIVOR.ff(name), SURVIVOR.exposure(name), SURVIVOR.pardons(name)].join('-')
-    }.join('  ')
+      [ display,
+        SURVIVOR.ff(name), SURVIVOR.exposure(name), SURVIVOR.pardons(name) ]
+      .join('-')
+    end
+    .join('  ')
     @rankings = Time.now
     say survivors_tally
   end
 
+  # The kickid command is used to kick players by their id.
   def kickid(id, msg)
-    %Q(kickid #{id} "#{msg}")
+    %(kickid #{id} "#{msg}")
   end
 
   def kick!(name, msg)
-      (id = SURVIVOR.id(name))? kickid(id, msg) : %Q(kick "#{name}")
+    (id = SURVIVOR.id(name))? kickid(id, msg) : %(kick "#{name}")
   end
 
+  # Kick player unless they have a pardon.
   def kick(name, msg)
-    if SURVIVOR.pardons(name) > 0
+    if SURVIVOR.pardons(name).positive?
       SURVIVOR.decrement_pardons(name)
       @pardoned = name
       nil
@@ -41,32 +49,41 @@ class Observer
     end
   end
 
+  # Determine if either the attacker or victim is to be kicked.
   def kick?(attacker, victim)
     if SURVIVOR.kicks(attacker) > EXCESSIVE_KICKS
+      # If the attacker has been kicked excessively,
+      # kick the atacker and forgive the victim.
       SURVIVOR.decrement_exposure(victim)
       kick! attacker, 'kicked AGAIN!'
     elsif SURVIVOR.kicks(victim) > EXCESSIVE_KICKS
+      # If the victim has been kicked excessively,
+      # kick the victim and forgive the attacker.
       SURVIVOR.decrement_ff(attacker)
       kick! victim, 'kicked AGAIN!'
     elsif SURVIVOR.ff(attacker) > EXCESSIVE_LIMIT
+      # If the attacker has exceeded the FF limit,
+      # kick the attacker and forgive all other players an exposure.
       SURVIVOR.decrement_exposure_for_all(except: attacker)
       kick attacker, 'kicked for FF(excessive)'
     elsif attacker == SURVIVOR.lvp
+      # This is the most valuable guard against trolls.
+      # Newcomers start out as lvp, and they'll be kicked immediately for FF.
+      # If the attacker is the least valuable player,
+      # kick the attacker and forgive the victim.
       SURVIVOR.decrement_exposure(victim)
       kick attacker, 'kicked for FF(demotion)'
     elsif SURVIVOR.exposure(victim) > EXPOSURE_LIMIT
+      # As the last check, if the victim has exceeded the exposure limit,
+      # kick the victim and forgive all other players an FF.
       SURVIVOR.decrement_ff_for_all(except: victim)
       kick victim, 'kicked for FF(exposure)'
-    else
-      nil
     end
   end
 
   def info(line)
     case line
-    when /^Network: IP [\d.]+,/, /^   VAC /
-      PUTS.terminal line, :yellow
-    when /^Console: /
+    when /^Network: IP [\d.]+,/, /^   VAC /, /^Console: /
       PUTS.terminal line, :yellow
     when /^Can't kick "/, /^Unknown command "/
       PUTS.terminal line, :magenta
@@ -124,7 +141,7 @@ class Observer
       when TrueClass
         PUTS.terminal line, :red
         SURVIVOR.tallies(attacker, victim)
-        unless cmd = kick?(attacker, victim)
+        unless (cmd = kick?(attacker, victim))
           SURVIVOR.demote attacker
           cmd = rankings
         end
@@ -152,38 +169,50 @@ class Observer
       PUTS.terminal line, :yellow
       SURVIVOR.clear_level
       SURVIVOR.names.each do |name|
-        if SURVIVOR.pardons(name) < PARDONS_LIMIT and SURVIVOR.playtime(name) > VOTE_INTERVAL
-          SURVIVOR.increment_pardons(name)
-        end
+        next unless SURVIVOR.pardons(name) < PARDONS_LIMIT &&
+                    SURVIVOR.playtime(name) > VOTE_INTERVAL
+
+        # As a reward for playing a while, give a pardon.
+        SURVIVOR.increment_pardons(name)
       end
     when "Initializing Director's script"
       PUTS.terminal line, :yellow
       SURVIVOR.names.each do |name|
-        if SURVIVOR.playtime(name) > VOTE_INTERVAL and SURVIVOR.pardons(name) < 1 and SURVIVOR.pity(name) < PITY_LIMIT
-          SURVIVOR.set_pardons(name, 1)
-          SURVIVOR.increment_pity(name)
-        end
+        next unless SURVIVOR.playtime(name) > VOTE_INTERVAL &&
+                    SURVIVOR.pardons(name) < 1 &&
+                    SURVIVOR.pity(name) < PITY_LIMIT
+
+        # The players have been killed... pity them.
+        # Give the player without pardons and that has not exceded their pity,
+        # a pardon.
+        SURVIVOR.set_pardons(name, 1)
+        SURVIVOR.increment_pity(name)
       end
     when /^"z_difficulty" = "(\w+)"/
       if $1 == 'Impossible'
         PUTS.terminal line, :yellow
       else
         PUTS.terminal line, :red
-        if lvp = SURVIVOR.lvp
+        if (lvp = SURVIVOR.lvp)
           cmd = kick! lvp, 'kicked for not playing expert'
         end
       end
     when /^Potential vote being called$/
       PUTS.terminal line, :red
       lvp = SURVIVOR.lvp
-      cmd = kick!(lvp, 'kicked for potential vote') if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
+      if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
+        cmd = kick!(lvp, 'kicked for potential vote')
+      end
     when /^Caprichozo: !idle([12])$/
       PUTS.terminal line, :red
-      if name = SURVIVOR.names[-$1.to_i] and name != 'Caprichozo'
+      if (name = SURVIVOR.names[-$1.to_i]) && name != 'Caprichozo'
         cmd = kick!(name, 'kicked for idle')
       end
     else
-      if name = SURVIVOR.names.reverse.detect{|name| line.start_with?(name+': ') or line.include?(' '+name+': ')}
+      name = SURVIVOR.names.reverse.detect do |name|
+        line.start_with?(name+': ') || line.include?(' '+name+': ')
+      end
+      if name
         PUTS.terminal line, :red
         cmd = kick!(name, 'kicked for chat')
       else
@@ -195,35 +224,29 @@ class Observer
     PUTS.error 'In process'
   end
 
-  LINES = Queue.new
+  LINES = Thread::Queue.new
   def handle_lines
-    line = nil
-    loop do
-      if line = LINES.shift
-        LOGS.push line
-        break if line == :exit
-        process(line)
-      end
+    while (line = LINES.pop)
+      LOGS.push line
+      break if line == :exit
+      process(line)
     end
   rescue
     PUTS.error 'In handle_lines'
   end
 
-  LOGS = Queue.new
+  LOGS = Thread::Queue.new
   def handle_log
-    line = nil
-    loop do
-      if line = LOGS.shift
-        break if line == :exit
-        PUTS.log line
-      end
+    while (line = LOGS.pop)
+      break if line == :exit
+      PUTS.log line
     end
   rescue
     PUTS.error 'In handle_log'
   end
 
   def handle_stdin
-    while cmd = $stdin.gets
+    while (cmd = $stdin.gets)
       cmd.strip!
       case cmd
       when 'trace'
@@ -235,9 +258,10 @@ class Observer
       when 'quit'
         PUTS.terminal "Don't say quit, say exit please."
       when /^!kick\s+(\S.*)$/
-        initial = $1
-        if name = SURVIVOR.names.reverse.detect{_1.start_with? initial}
-          PUTS.console kick!(name, 'kicked for idle') unless name == 'Caprichozo'
+        name = $1
+        if (name = SURVIVOR.names.reverse.detect{_1.start_with? name}) &&
+           name != 'Caprichozo'
+          PUTS.console kick!(name, 'kicked for idle')
         end
       else
         @trace = true # will want to see the output
@@ -265,7 +289,7 @@ class Observer
     @pardoned = nil
     @difficulty = @rankings = Time.now
     @trace = @verbose = false
-    PTY.spawn(CMD) do |reader, writer, pid|
+    PTY.spawn(CMD) do |reader, writer, _pid|
       PUTS.console = writer
       @checks_thread = Thread.new { handle_checks }
       @stdin_thread = Thread.new { handle_stdin }
