@@ -8,8 +8,9 @@
 
 SOURCE = './bin/l4d2-observer'
 TARGET = './tmp/l4d2-observer'
-REMOTE = 'bunny@192.168.107:.local/bin/l4d2-observer'
+REMOTE = '/home/bunny/.local/bin/l4d2-observer'
 
+# Recursively inlines require_relative statements.
 def compile(file, writer)
   File.open(file, 'r') do |reader|
     while (line = reader.gets)
@@ -27,8 +28,13 @@ def compile(file, writer)
   end
 end
 
+# Compile
 File.open(TARGET, 'w') do |writer|
   compile(SOURCE, writer)
 end
-system "chmod u+x #{TARGET}"
-system "scp #{TARGET} #{REMOTE}"
+
+# Copy to server
+system "sudo cp #{TARGET} #{REMOTE}"
+system "sudo chown bunny #{REMOTE}"
+system "sudo chgrp bunny #{REMOTE}"
+system "sudo chmod u+x #{REMOTE}"
