@@ -1,44 +1,42 @@
 #!/usr/bin/env ruby
-# Works on:
-#   Version 2.2.1.3 (left4dead2)
-#   Network Version 2.1.0.0
-#   Exe build: 01:00:42 May 20 2021 (8230) (550)
+# Used on L4D2 version: 2.2.2.6
 
 require 'help_parser'
-OPTIONS = HelpParser['0.1.210627',<<HELP]
-### L4D2 Friendly Fire Observer ###
-Usage:
-  l4d2-observer [:options+] [<srcds_dir>]
-Options:
-  --ff=N      \tFF limit
-  --exposure=N\tExposure limit
-  --pardons=N \tPardons limit
-  --pity=N    \tPity limit
-  --kicks=N   \tKicks limit
-Types:
-  N   /^\\d$/
-# Notes:
-#   srcds_linux defaults to ~/Steam/L4D2-server
+
+OPTIONS = HelpParser['1.0.230504',<<~HELP]
+  ### L4D2 Friendly Fire Observer ###
+  Usage:
+    l4d2-observer [:options+] [<srcds_dir>]
+  Options:
+    --ff=N      \tFF limit
+    --exposure=N\tExposure limit
+    --pardons=N \tPardons limit
+    --pity=N    \tPity limit
+    --kicks=N   \tKicks limit
+  Types:
+    N   /^\\d$/
+  # Notes:
+  #   srcds_dir defaults to ~/Steam/L4D2-server
 HELP
 HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
 SERVER_DIR = File.expand_path(OPTIONS.srcds_dir || '~/Steam/L4D2-server')
 unless File.exist? SERVER_DIR
-  $stderr.puts "#{SERVER_DIR} does not exit."
+  warn "#{SERVER_DIR} does not exit."
   exit 64
 end
 unless File.directory? SERVER_DIR
-  $stderr.puts "#{SERVER_DIR} not a directory."
+  warn "#{SERVER_DIR} not a directory."
   exit 64
 end
 unless File.exist? File.join(SERVER_DIR, 'srcds_linux')
-  $stderr.puts "srcds_linux not found in #{SERVER_DIR}"
+  warn "srcds_linux not found in #{SERVER_DIR}"
   exit 64
 end
 
 EXCESSIVE_LIMIT = OPTIONS.ff       || 3
 EXPOSURE_LIMIT  = OPTIONS.exposure || 3
-PARDONS_LIMIT   = OPTIONS.exposure || 3
+PARDONS_LIMIT   = OPTIONS.pardons  || 3
 EXCESSIVE_KICKS = OPTIONS.kicks    || 3
 PITY_LIMIT      = OPTIONS.pity     || 3
 
@@ -55,8 +53,11 @@ if File.exist? LOG
   system('gzip', log)
 end
 
-require_relative '../lib/l4d2-observer.rb'
 Dir.chdir SERVER_DIR
 ENV['LD_LIBRARY_PATH'] = './bin'
-CMD = './srcds_linux -console -game left4dead2 +maxplayers 4 +exec server.cfg +map c1m1_hotel'
+CMD = './srcds_linux'
+CMD << ' -console -game left4dead2 +port 27015 +maxplayers 8 +exec server.cfg'
+CMD << ' +map c1m1_hotel'
+
+require_relative '../lib/l4d2-observer'
 L4D2Observer.run
