@@ -1,6 +1,7 @@
 module L4D2Observer
 class Puts
   attr_writer :terminal, :console, :log
+
   def initialize
     @terminal = $stdout
     @console = nil
@@ -8,11 +9,13 @@ class Puts
   end
 
   using Rainbow
+
   def terminal(string, c = :black)
     @terminal.puts string.color c
   end
 
   CX = Mutex.new
+
   def console(string)
     terminal string, :green
     CX.synchronize{ @console.puts string }
