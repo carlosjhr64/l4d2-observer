@@ -15,8 +15,10 @@ class Survivor
 
   TALLY = {}
 
-  Tally = Struct.new(:ff, :exposure, :pardons, :pity, :kicks, :timestamp, :id) do
-    def initialize(ff:0, exposure:0, pardons:0, pity:0, kicks:0, timestamp:nil, id:nil)
+  Tally = Struct.new(:ff, :exposure, :pardons, :pity, :kicks,
+                     :timestamp, :id) do
+    def initialize(ff:0, exposure:0, pardons:0, pity:0, kicks:0,
+                   timestamp:nil, id:nil)
       super(ff, exposure, pardons, pity, kicks, timestamp, id)
     end
   end
@@ -73,13 +75,13 @@ class Survivor
   end
 
   def demote(name)
-    if index = @active.index(name) and @active.length > index+1
+    if (index = @active.index(name)) && @active.length > index+1
       @active[index], @active[index+1] = @active[index+1], @active[index]
     end
   end
 
   def shared_ip?(name)
-    if tally = @players[name]
+    if (tally = @players[name])
       @names.count{@players[_1]==tally} > 1
     else
       false
@@ -87,16 +89,13 @@ class Survivor
   end
 
   # get and set
-  ['ff', 'exposure', 'pardons', 'pity', 'kicks', 'timestamp', 'id'].each do |attribute|
-    code = <<-CODE
-      def attribute(name)
-        @players[name].attribute
-      end
-      def set_attribute(name, value)
-        @players[name].attribute = value
-      end
-    CODE
-    eval code.gsub('attribute', attribute)
+  %w[ff exposure pardons pity kicks timestamp id].each do |attribute|
+    define_method attribute do |name|
+      @players[name].send attribute
+    end
+    define_method "set_#{attribute}" do |name, value|
+      @players[name].send "#{attribute}=", value
+    end
   end
 
   def delete(name)
@@ -110,12 +109,14 @@ class Survivor
   end
 
   def register!(name, id)
-    if active? name then
+    if active? name
       if id == id(name)
         false
       else
         # name issues...
-        return name unless name.length < 65 and name=~/^[[:print:]]+$/ and name.chars.count{_1=~/\w/} > 1
+        return name unless name.length < 65 &&
+                           name=~/^[[:print:]]+$/ &&
+                           name.chars.count{_1=~/\w/} > 1
         return name if SURVIVOR.shared_ip?(name)
         return name if BOT[name]
         set_id(name, id)
@@ -132,34 +133,32 @@ class Survivor
   end
 
   def no_less_than_zero(amount)
-    (amount < 0)? 0 : amount
+    amount.negative? ? 0 : amount
   end
 
   # increment and decrement
-  ['ff', 'exposure', 'pardons', 'pity', 'kicks'].each do |attribute|
-    code = <<-CODE
-      def increment_attribute(name, amount=1)
-        set_attribute(name, attribute(name)+amount)
-      end
-      def decrement_attribute(name, amount=1)
-        set_attribute(name, no_less_than_zero(attribute(name)-amount))
-      end
-    CODE
-    eval code.gsub('attribute', attribute)
+  %w[ff exposure pardons pity kicks].each do |attribute|
+    define_method "increment_#{attribute}" do |name, amount=1|
+      send "set_#{attribute}", name, send(attribute, name)+amount
+    end
+    define_method "decrement_#{attribute}" do |name, amount=1|
+      send "set_#{attribute}", name,
+        no_less_than_zero(send(attribute, name)-amount)
+    end
   end
 
   # decrement of all
-  ['ff', 'exposure', 'pity'].each do |attribute|
-    code = <<-CODE
-      def decrement_attribute_for_all(amount=1, except: nil)
-        @active.each{|name| decrement_attribute(name, amount) unless name == except}
+  %w[ff exposure pity].each do |attribute|
+    define_method "decrement_#{attribute}_for_all" do |amount=1, except: nil|
+      @active.each do |name|
+        next if name == except
+        send "decrement_#{attribute}", name, amount
       end
-    CODE
-    eval code.gsub('attribute', attribute)
+    end
   end
 
   def demerits(name)
-    (name == mvp)? 2 : 1
+    name == mvp ? 2 : 1
   end
 
   def tallies(attacker, victim)
@@ -168,22 +167,22 @@ class Survivor
   end
 
   def balance_rankings(newcomer)
-    parf = names.select{_1!=newcomer}.map{ff(_1)}.sort.first
+    parf = names.reject{_1==newcomer}.map{ff(_1)}.min
     decrement_ff_for_all(parf, except:newcomer)
-    parx = names.select{_1!=newcomer}.map{exposure(_1)}.sort.first
+    parx = names.reject{_1==newcomer}.map{exposure(_1)}.min
     decrement_exposure_for_all(parx, except:newcomer)
-    parp = names.select{_1!=newcomer}.map{pity(_1)}.sort.first
+    parp = names.reject{_1==newcomer}.map{pity(_1)}.min
     decrement_pity_for_all(parp, except:newcomer)
   end
 
   def clear_level
-    parf = names.map{|name| ff(name)}.minmax.sum{_1.to_i}/2
-    parx = names.map{|name| exposure(name)}.minmax.sum{_1.to_i}/2
+    parf = names.map{|name| ff(name)}.minmax.sum(&:to_i)/2
+    parx = names.map{|name| exposure(name)}.minmax.sum(&:to_i)/2
     names.each do |name|
       ff = ff(name)
-      set_ff(name, (ff <= parf)? 0 : ff - parf)
+      set_ff(name, ff <= parf ? 0 : ff - parf)
       exposure = exposure(name)
-      set_exposure(name, (exposure <= parx)? 0 : exposure - parx)
+      set_exposure(name, exposure <= parx ? 0 : exposure - parx)
     end
   end
 end
