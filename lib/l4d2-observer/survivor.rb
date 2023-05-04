@@ -28,30 +28,35 @@ class Survivor
   end
 
   def initialize
-    @active = []
-    @players = {}
+    @players = [] # Current players
+    @tallies = {} # Tally of all players
   end
 
   def names
-    @active
+    @players
   end
 
+  # Least Valuable Player
   def lvp
-    @active[-1]
+    @players.last
   end
 
+  # Most Valuable Player
   def mvp
-    @active[0]
+    @players.first
   end
 
   def active?(name)
-    @active.include? name
+    @players.include? name
   end
 
   def none?
-    @active.empty?
+    @players.empty?
   end
 
+  # Are both players human?
+  # If so, return true. If not, return false.
+  # But guard against name changes while in game.
   def pvp?(attacker, victim)
     if active? attacker
       if active? victim
@@ -69,43 +74,53 @@ class Survivor
     end
   end
 
+  # Add a player's name to the game.
+  # Set a new player's tally to Tally.new(or existing tally based on ip).
+  # Tally[ip] guards against name changes.
   def add(name, ip)
-    @active.push name
-    @players[name] ||= (TALLY[ip] ||= Tally.new)
+    @players.push name
+    @tallies[name] ||= (TALLY[ip] ||= Tally.new)
   end
 
-  def demote(name)
-    if (index = @active.index(name)) && @active.length > index+1
-      @active[index], @active[index+1] = @active[index+1], @active[index]
-    end
+  # Demoting a player moves the player one position closer to last.
+  def demote(demoted)
+    return if demoted == @players.last # Can't further demote last player
+
+    index = @players.index(demoted)
+    @players[index] = @players[index+1]
+    @players[index+1] = demoted
   end
 
+  # Check if a player name is sharing an ip with another player name.
+  # It's possible that a player changed their name.
   def shared_ip?(name)
-    if (tally = @players[name])
-      @names.count{@players[_1]==tally} > 1
+    if (tally = @tallies[name])
+      @names.count{@tallies[_1]==tally} > 1
     else
       false
     end
   end
 
-  # get and set
+  # getters and setters for Tally attributes
   %w[ff exposure pardons pity kicks timestamp id].each do |attribute|
     define_method attribute do |name|
-      @players[name].send attribute
+      @tallies[name].send attribute
     end
     define_method "set_#{attribute}" do |name, value|
-      @players[name].send "#{attribute}=", value
+      @tallies[name].send "#{attribute}=", value
     end
   end
 
+  # Player has left the game.
   def delete(name)
-    @active.delete name
+    @players.delete name
     set_id(name, nil)
     set_pardons(name, 0)
   end
 
+  # Get player's name from id.
   def name(id)
-    @players.detect{_1[1].id==id}&.first
+    @tallies.detect{_1[1].id==id}&.first
   end
 
   def register!(name, id)
@@ -132,7 +147,7 @@ class Survivor
     Time.now - timestamp(name)
   end
 
-  def no_less_than_zero(amount)
+  def positive(amount)
     amount.negative? ? 0 : amount
   end
 
@@ -142,30 +157,38 @@ class Survivor
       send "set_#{attribute}", name, send(attribute, name)+amount
     end
     define_method "decrement_#{attribute}" do |name, amount=1|
-      send "set_#{attribute}", name,
-        no_less_than_zero(send(attribute, name)-amount)
+      send "set_#{attribute}", name, positive(send(attribute, name)-amount)
     end
   end
 
-  # decrement of all
+  # decrement for all
   %w[ff exposure pity].each do |attribute|
     define_method "decrement_#{attribute}_for_all" do |amount=1, except: nil|
-      @active.each do |name|
+      @players.each do |name|
         next if name == except
         send "decrement_#{attribute}", name, amount
       end
     end
   end
 
+  # Demerits for offenses against the MVP are doubled.
   def demerits(name)
     name == mvp ? 2 : 1
   end
 
+  # Players are expected to avoid friendly fire and exposure to friendly fire.
+  # Too much friendly fire or exposure to friendly fire will result in a kick.
+  # Increment the friendly fire count of the attacker.
+  # Increment the exposure count of the victim.
+  # The MVP is assumed to be playing well, and so demirits for FF to the MVP is
+  # doubled, and demerits for exposure to FF from the MVP is doubled.
   def tallies(attacker, victim)
     increment_ff attacker, demerits(victim)
     increment_exposure victim, demerits(attacker)
   end
 
+  # For fairness, when a new player joins, the tallies of the other players are
+  # reduced by a par amount: min.
   def balance_rankings(newcomer)
     parf = names.reject{_1==newcomer}.map{ff(_1)}.min
     decrement_ff_for_all(parf, except:newcomer)
@@ -175,9 +198,11 @@ class Survivor
     decrement_pity_for_all(parp, except:newcomer)
   end
 
+  # After clearing a level, the FF and exposure tallies are reduced by a
+  # par amount: (min + max)/2.
   def clear_level
-    parf = names.map{|name| ff(name)}.minmax.sum(&:to_i)/2
-    parx = names.map{|name| exposure(name)}.minmax.sum(&:to_i)/2
+    parf = names.map{|name| ff(name)}.minmax.sum / 2
+    parx = names.map{|name| exposure(name)}.minmax.sum / 2
     names.each do |name|
       ff = ff(name)
       set_ff(name, ff <= parf ? 0 : ff - parf)
