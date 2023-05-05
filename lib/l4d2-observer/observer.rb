@@ -226,7 +226,7 @@ class Observer
         # But seriously, this prevents server hijacking.
         cmd = kick!(lvp, 'kicked for potential vote')
       end
-    when /^#{ADMIN}: !idle([1234])$/
+    when /\b#{ADMIN}: !idle([1234])$/
       # It's very hard to detect idle players from the server's log.
       # When the server admin plays, the admin gets to kick players...
       # meant to be used against idle players.
