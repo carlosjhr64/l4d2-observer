@@ -3,7 +3,7 @@
 
 require 'help_parser'
 
-OPTIONS = HelpParser['1.0.230504',<<~HELP]
+OPTIONS = HelpParser['1.0.230504', <<~HELP]
   ### L4D2 Friendly Fire Observer ###
   Usage:
     l4d2-observer [:options+] [<srcds_dir>]
