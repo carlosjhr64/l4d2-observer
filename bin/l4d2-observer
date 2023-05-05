@@ -13,11 +13,14 @@ OPTIONS = HelpParser['1.0.230504', <<~HELP]
     --pardons=N \tPardons limit
     --pity=N    \tPity limit
     --kicks=N   \tKicks limit
+    --admin=W   \tAdmin's name
   Types:
     N   /^\\d$/
+    W   /^\\w+$/
   # Notes:
   #   srcds_dir defaults to ~/Steam/L4D2-server
   #   N defaults to 3
+  #   admin defaults to "Caprichozo" (me :D)
 HELP
 HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
@@ -40,6 +43,8 @@ EXPOSURE_LIMIT  = OPTIONS.exposure || 3
 PARDONS_LIMIT   = OPTIONS.pardons  || 3
 EXCESSIVE_KICKS = OPTIONS.kicks    || 3
 PITY_LIMIT      = OPTIONS.pity     || 3
+
+ADMIN = OPTIONS.admin || 'Caprichozo'
 
 X = '*' # Funky characters replacement
 VOTE_INTERVAL = 180

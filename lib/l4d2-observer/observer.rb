@@ -226,15 +226,14 @@ class Observer
         # But seriously, this prevents server hijacking.
         cmd = kick!(lvp, 'kicked for potential vote')
       end
-    when /^Caprichozo: !idle([0123])$/
-      # TODO: Change "Caprichozo" to ADMIN, the admin's name.
+    when /^#{ADMIN}: !idle([0123])$/
       # It's very hard to detect idle players from the server's log.
       # When the server admin plays, the admin gets to kick players...
       # meant to be used against idle players.
       # Note that one can configure the controller to send messages to the
       # console.
       PUTS.terminal line, :red
-      if (name = SURVIVOR.names[-$1.to_i]) && name != 'Caprichozo'
+      if (name = SURVIVOR.names[-$1.to_i]) && name != ADMIN
         cmd = kick!(name, 'kicked for idle')
       end
     else
@@ -299,7 +298,7 @@ class Observer
       when /^!kick\s+(\S.*)$/
         name = $1
         if (name = SURVIVOR.names.reverse.detect{_1.start_with? name}) &&
-           name != 'Caprichozo'
+           name != ADMIN
           PUTS.console kick!(name, 'kicked for idle')
         end
       else
