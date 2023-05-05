@@ -19,11 +19,14 @@ Options:
   --pardons=N 	Pardons limit
   --pity=N    	Pity limit
   --kicks=N   	Kicks limit
+  --admin=W   	Admin's name
 Types:
   N   /^\d$/
+  W   /^\w+$/
 # Notes:
 #   srcds_dir defaults to ~/Steam/L4D2-server
 #   N defaults to 3
+#   admin defaults to "Caprichozo" (me :D)
 ```
 ## LICENSE
 
