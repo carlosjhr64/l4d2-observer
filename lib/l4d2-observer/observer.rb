@@ -34,6 +34,7 @@ class Observer
     %(kickid #{id} "#{msg}")
   end
 
+  # This is a robust kick command that can kick by name or id.
   def kick!(name, msg)
     (id = SURVIVOR.id(name))? kickid(id, msg) : %(kick "#{name}")
   end
@@ -81,6 +82,10 @@ class Observer
     end
   end
 
+  # The server dumps a lot of information to the terminal.
+  # I try to filter out the noise and only display the important stuff.
+  # The @trace and @verbose flags can be set via the terminal by entering
+  # respectively: trace and verbose.
   def info(line)
     case line
     when /^Network: IP [\d.]+,/, /^   VAC /, /^Console: /
@@ -104,19 +109,21 @@ class Observer
     end
   end
 
+  # Here I process each line the server outputs.
   def process(line)
     cmd = nil
     case line
     when /Client "(.*)" connected \(([^:]*):.*\)\.$/
       # Could not anchor start of line bc previous line error joins sometimes.
-      SURVIVOR.add $1, $2
+      SURVIVOR.add $1, $2 # survivor, ip
       PUTS.terminal line, :cyan
-      PUTS.console 'users'
+      PUTS.console 'users' # show user info for players on the server
     when /^\d+:(\d+):"(.*)"$/
       id,survivor = $1,$2
       registered = SURVIVOR.register!(survivor, id)
       case registered
       when String
+        # There was a problem with the name.
         PUTS.terminal line, :red
         SURVIVOR.delete(registered)
         cmd = kickid(id, 'kicked for name registration issue')
@@ -136,6 +143,8 @@ class Observer
       pvp = SURVIVOR.pvp?(attacker, victim)
       case pvp
       when String
+        # A player changed their name.  Sending the "users" command to get the
+        # cheater's id and kick the cheater out.
         PUTS.terminal line, :red
         PUTS.console 'users'
       when TrueClass
