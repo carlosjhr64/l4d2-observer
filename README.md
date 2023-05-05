@@ -1,26 +1,33 @@
-# template
+# L4d2Observer
 
-* [VERSION 0.1.210627](https://github.com/author/template/releases)
-* [github](https://www.github.com/author/template)
-* [rubygems](https://rubygems.org/gems/template)
+* [VERSION 1.0.230504](https://github.com/carlosjhr64/l4d2-observer/releases)
+* [github](https://www.github.com/carlosjhr64/l4d2-observer)
 
-## DESCRIPTION:
+## DESCRIPTION
 
-TODO
+A L4D2 server observer that kicks players out for poor play.
 
-TODO
-
-## SYNOPSIS:
-
-TODO
-
-## INSTALL:
-```shell
-$ gem install template
+## HELP
+```console
+$ l4d2-observer --help
+### L4D2 Friendly Fire Observer ###
+Usage:
+  l4d2-observer [:options+] [<srcds_dir>]
+Options:
+  --ff=N      	FF limit
+  --exposure=N	Exposure limit
+  --pardons=N 	Pardons limit
+  --pity=N    	Pity limit
+  --kicks=N   	Kicks limit
+Types:
+  N   /^\d$/
+# Notes:
+#   srcds_dir defaults to ~/Steam/L4D2-server
+#   N defaults to 3
 ```
-## LICENSE:
+## LICENSE
 
-Copyright 2021 CarlosJHR64
+Copyright (c) 2023 CarlosJHR64
 
 Permission is hereby granted, free of charge,
 to any person obtaining a copy of this software and

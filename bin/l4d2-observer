@@ -17,6 +17,7 @@ OPTIONS = HelpParser['1.0.230504', <<~HELP]
     N   /^\\d$/
   # Notes:
   #   srcds_dir defaults to ~/Steam/L4D2-server
+  #   N defaults to 3
 HELP
 HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
