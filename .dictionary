@@ -2,8 +2,6 @@ caprichozo
 carlosjhr
 cfg
 chdir
-chgrp
-chmod
 dirname
 eio
 elsif
@@ -32,10 +30,8 @@ spawnpoint
 srcds
 stdin
 strftime
-sudo
 tff
 tkicks
-tmp
 tpardons
 tpity
 trueclass

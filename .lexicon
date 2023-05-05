@@ -154,7 +154,6 @@ red
 register
 registered
 reject
-REMOTE
 rename
 replace
 require
@@ -172,7 +171,6 @@ set_pardons
 set_timestamp
 shared_ip
 sleep
-SOURCE
 spawn
 split
 srcds_dir
@@ -193,7 +191,6 @@ tallies
 tally
 Tally
 TALLY
-TARGET
 terminal
 Thread
 Time
