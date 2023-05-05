@@ -18,7 +18,7 @@ def compile(file, writer)
       if line =~ /^\s*require_relative\s+["'](.*)["']\s*$/
         writer.puts "# START: #{line}"
         dir = File.dirname file
-        path = File.expand_path File.join dir, $1
+        path = File.expand_path File.join dir, "#{$1}.rb"
         compile(path, writer)
         writer.puts "# END: #{line}"
       else
