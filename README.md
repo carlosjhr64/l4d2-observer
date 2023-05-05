@@ -41,12 +41,14 @@ You'll need:
 ```console
 git clone git@github.com:carlosjhr64/l4d2-observer.git
 cd l4d2-observer
-compile > l4d2-observer
+./bin/compile > l4d2-observer
 mv l4d2-observer /path-to/bin/l4d2-observer
 # And just run it...
 screen # preferably so that you can detach
 l4d2-observer --admin=yourPlayerName
 ```
+Please read the code for all the goodies!
+
 ## LICENSE
 
 Copyright (c) 2023 CarlosJHR64
