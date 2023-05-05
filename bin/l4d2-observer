@@ -3,7 +3,7 @@
 
 require 'help_parser'
 
-OPTIONS = HelpParser['1.0.230504', <<~HELP]
+OPTIONS = HelpParser['1.0.230505', <<~HELP]
   ### L4D2 Friendly Fire Observer ###
   Usage:
     l4d2-observer [:options+] [<srcds_dir>]
@@ -50,6 +50,8 @@ X = '*' # Funky characters replacement
 VOTE_INTERVAL = 180
 RANDOM_TIME = 60
 
+# The log file is found in:
+#   ~/.cache/l4d2-observer/log
 CACHE = File.expand_path '~/.cache/l4d2-observer'
 Dir.mkdir File.expand_path CACHE unless File.exist? CACHE
 LOG = File.join CACHE, 'log'
@@ -59,6 +61,7 @@ if File.exist? LOG
   system('gzip', log)
 end
 
+# We go to the server's directory, so l4d2-observer can be run from anywhere.
 Dir.chdir SERVER_DIR
 ENV['LD_LIBRARY_PATH'] = './bin'
 CMD = './srcds_linux'

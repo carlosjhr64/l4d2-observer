@@ -1,6 +1,8 @@
 _1
 active
 add
+admin
+ADMIN
 amount
 attacker
 attribute
@@ -24,6 +26,7 @@ console
 count
 CX
 cyan
+D
 decrement_exposure
 decrement_exposure_for_all
 decrement_ff
@@ -50,7 +53,6 @@ ENV
 Errno
 error
 except
-Exception
 EXCESSIVE_KICKS
 EXCESSIVE_LIMIT
 exist
