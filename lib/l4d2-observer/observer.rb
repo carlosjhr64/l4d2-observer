@@ -129,7 +129,7 @@ class Observer
       when String
         # There was a problem with the name.
         PUTS.terminal line, :red
-        SURVIVOR.delete(registered)
+        SURVIVOR.delete(registered, id)
         cmd = kickid(id, 'kicked for name registration issue')
       when TrueClass
         PUTS.terminal line, :yellow

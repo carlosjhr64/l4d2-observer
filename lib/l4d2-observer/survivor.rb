@@ -112,7 +112,8 @@ class Survivor
   end
 
   # Player has left the game.
-  def delete(name)
+  def delete(name, id=nil)
+    name = name(id) || name if id && !@players.include?(name)
     @players.delete name
     set_id(name, nil)
     set_pardons(name, 0)
@@ -126,20 +127,21 @@ class Survivor
   def register!(name, id)
     if active? name
       if id == id(name)
-        false
+        false # Previously registered
       else
-        # name issues...
+        # name issues... will be kicked
         return name unless name.length < 65 &&
                            name=~/^[[:print:]]+$/ &&
                            name.chars.count{_1=~/\w/} > 1
         return name if SURVIVOR.shared_ip?(name)
         return name if BOT[name]
+        # name is good
         set_id(name, id)
         set_timestamp name, Time.now
-        true
+        true # Now registered
       end
     else
-      name(id) # String | NilClass
+      name # Player must have changed name in game. Will be kicked.
     end
   end
 
