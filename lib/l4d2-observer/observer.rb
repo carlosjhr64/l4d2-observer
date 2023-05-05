@@ -115,11 +115,14 @@ class Observer
     cmd = nil
     case line
     when /Client "(.*)" connected \(([^:]*):.*\)\.$/
+      # A new player has connected to the server.
       # Could not anchor start of line bc previous line error joins sometimes.
       SURVIVOR.add $1, $2 # survivor, ip
       PUTS.terminal line, :cyan
       PUTS.console 'users' # show user info for players on the server
     when /^\d+:(\d+):"(.*)"$/
+      # This line is the result of the "users" console command.
+      # This is information about a player on the server.
       id,survivor = $1,$2
       registered = SURVIVOR.register!(survivor, id)
       case registered
@@ -140,11 +143,12 @@ class Observer
         PUTS.terminal line if @verbose
       end
     when /^(.*) attacked (.*)$/
+      # A player has attacked another player.
       attacker, victim = $1, $2
       pvp = SURVIVOR.pvp?(attacker, victim)
       case pvp
       when String
-        # A player changed their name.  Sending the "users" command to get the
+        # A player changed their name. Sending the "users" command to get the
         # cheater's id and kick the cheater out.
         PUTS.terminal line, :red
         PUTS.console 'users'
@@ -159,16 +163,20 @@ class Observer
         PUTS.terminal line, :yellow
       end
     when /^Dropped (.+) from server \((.+)\)$/
+      # A player has disconnected from the server.
       survivor,why = $1,$2
       SURVIVOR.delete survivor if SURVIVOR.active? survivor
       PUTS.terminal line, :cyan
       if SURVIVOR.none?
-        cmd = 'exit'
+        cmd = 'exit' # Quit if all players are gone.
       else
         case why
         when 'Kicked by Console : You have been voted off'
+          # The Observer is very jealous of its job and doesn't like it when
+          # players vote to kick. Only the Observer kicks players off!
           cmd = kick!(SURVIVOR.lvp, 'kicked for kick vote')
         when /"(kicked .*)"$/
+          # A player has been kicked from the server by the Observer.
           SURVIVOR.increment_kicks(survivor)
           cmd = say "#{survivor} #{$1}"
         else
@@ -193,8 +201,8 @@ class Observer
                     SURVIVOR.pity(name) < PITY_LIMIT
 
         # The players have been killed... pity them.
-        # Give the player without pardons and that has not exceded their pity,
-        # a pardon.
+        # Give a pardon to the player without pardons and
+        # that has not exceded their pity.
         SURVIVOR.set_pardons(name, 1)
         SURVIVOR.increment_pity(name)
       end
@@ -204,6 +212,8 @@ class Observer
       else
         PUTS.terminal line, :red
         if (lvp = SURVIVOR.lvp)
+          # The difficulty has been changed to something other than impossible.
+          # This pisses off the Observer and so kicks the LVP.
           cmd = kick! lvp, 'kicked for not playing expert'
         end
       end
@@ -211,14 +221,27 @@ class Observer
       PUTS.terminal line, :red
       lvp = SURVIVOR.lvp
       if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
+        # Pissed off by the vote call, the Observer kicks the LVP if
+        # the LVP has not played long enough.
+        # But seriously, this prevents server hijacking.
         cmd = kick!(lvp, 'kicked for potential vote')
       end
-    when /^Caprichozo: !idle([12])$/
+    when /^Caprichozo: !idle([0123])$/
+      # TODO: Change "Caprichozo" to ADMIN, the admin's name.
+      # It's very hard to detect idle players from the server's log.
+      # When the server admin plays, the admin gets to kick players...
+      # meant to be used against idle players.
+      # Note that one can configure the controller to send messages to the
+      # console.
       PUTS.terminal line, :red
       if (name = SURVIVOR.names[-$1.to_i]) && name != 'Caprichozo'
         cmd = kick!(name, 'kicked for idle')
       end
     else
+      # The sever config allows one to disable voice chat.
+      # But text chat is still available(can't be disabled).
+      # The Observer finds this very annoying and
+      # kicks players that use text chat.
       name = SURVIVOR.names.reverse.detect do |name|
         line.start_with?(name+': ') || line.include?(' '+name+': ')
       end
