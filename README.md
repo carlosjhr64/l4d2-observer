@@ -28,6 +28,21 @@ Types:
 #   N defaults to 3
 #   admin defaults to "Caprichozo" (me :D)
 ```
+## INSTALL
+
+You'll need:
+
+* Ruby 3.2 and the following gems:
+  * help_parser
+  * rainbow
+* Obviously a working L4D2 dedicated server:
+  * See [Linode's guide](https://www.linode.com/docs/guides/left-4-dead-2-multiplayer-server-installation/)
+```console
+git clone git@github.com:carlosjhr64/l4d2-observer.git
+cd l4d2-observer
+compile > l4d2-observer
+mv l4d2-observer /path-to/bin/l4d2-observer
+```
 ## LICENSE
 
 Copyright (c) 2023 CarlosJHR64
