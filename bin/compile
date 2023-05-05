@@ -1,40 +1,29 @@
 #!/usr/bin/env ruby
 
-# Compiles the observer script into a single file.
+# Compiles the observer script into a single output to stdout.
 # This is done to make it easier to deploy to the server.
 # The script is compiled by recursively inlining all
 # require_relative statements.
 # The compiled script is then copied to the server.
 
-SOURCE = './bin/l4d2-observer'
-TARGET = './tmp/l4d2-observer'
-REMOTE = '/home/bunny/.local/bin/l4d2-observer'
 
 # Recursively inlines require_relative statements.
-def compile(file, writer)
+def compile(file)
   File.open(file, 'r') do |reader|
     while (line = reader.gets)
       # require_relative
       if line =~ /^\s*require_relative\s+["'](.*)["']\s*$/
-        writer.puts "# START: #{line}"
+        puts "# START: #{line}"
         dir = File.dirname file
         path = File.expand_path File.join dir, "#{$1}.rb"
-        compile(path, writer)
-        writer.puts "# END: #{line}"
+        compile(path)
+        puts "# END: #{line}"
       else
-        writer.puts line
+        puts line
       end
     end
   end
 end
 
 # Compile
-File.open(TARGET, 'w') do |writer|
-  compile(SOURCE, writer)
-end
-
-# Copy to server
-system "sudo cp #{TARGET} #{REMOTE}"
-system "sudo chown bunny #{REMOTE}"
-system "sudo chgrp bunny #{REMOTE}"
-system "sudo chmod u+x #{REMOTE}"
+compile('./bin/l4d2-observer')
