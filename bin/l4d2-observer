@@ -22,6 +22,18 @@ OPTIONS = HelpParser['1.0.230505', <<~HELP]
   #   N defaults to 3
   #   admin defaults to "Caprichozo" (me :D)
 HELP
+
+begin
+  ### Standard Library ###
+  require 'pty'
+  require 'yaml'
+  ### Gems ###
+  require 'rainbow/refinement'
+rescue
+  warn $!.message
+  exit 72
+end
+
 HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
 SERVER_DIR = File.expand_path(OPTIONS.srcds_dir || '~/Steam/L4D2-server')
