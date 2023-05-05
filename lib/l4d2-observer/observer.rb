@@ -17,6 +17,7 @@ class Observer
         display = display[0...13]+X if display.length > 14
       end
       if name == @pardoned
+        # If the player was pardoned, display their name in exclamations.
         @pardoned = nil
         display = "!#{display}!"
       end
@@ -244,6 +245,9 @@ class Observer
     PUTS.error 'In handle_lines'
   end
 
+  # Notice that every line emitted by the server is appended to the log file.
+  # This is important because it allows one to review the raw output of the
+  # server. On the other hand, the output to the terminal is filtered.
   LOGS = Thread::Queue.new
   def handle_log
     while (line = LOGS.pop)
@@ -254,6 +258,9 @@ class Observer
     PUTS.error 'In handle_log'
   end
 
+  # The server is started with the -console option. This allows us to send
+  # commands to the server via stdin. This is useful for kicking players and
+  # changing the trace level.
   def handle_stdin
     while (cmd = $stdin.gets)
       cmd.strip!
@@ -273,6 +280,7 @@ class Observer
           PUTS.console kick!(name, 'kicked for idle')
         end
       else
+        # If none of the above, then send the command to the server via console.
         @trace = true # will want to see the output
         PUTS.console cmd
       end
@@ -286,9 +294,13 @@ class Observer
       sleep rand RANDOM_TIME
       now = Time.now
       if now - @difficulty > VOTE_INTERVAL
+        # From time to time, check the difficulty.
+        # Elsewhere, the difficulty is checked and if it is not expert,
+        # the LVP is kicked.
         @difficulty = Time.now
         PUTS.console 'z_difficulty'
       elsif now - @rankings > RANDOM_TIME
+        # If the rankings have not been displayed for a while, display them.
         PUTS.console rankings unless SURVIVOR.none?
       end
     end

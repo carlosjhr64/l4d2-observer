@@ -4,15 +4,15 @@ module L4D2Observer
 
   def self.run
     File.open(LOG, 'a') do |log|
-      begin
-        PUTS.log = log
-        Observer.new
-        while Thread.list.count > 1 do
-          Thread.pass
-        end
-      rescue Exception
-        PUTS.error 'In main'
-      end
+      PUTS.log = log
+      # Observer spawns the server and procedes to read it's output.
+      Observer.new
+      # When the server terminates and Observer reads it's last line,
+      # we still have to wait for the read lines to be processed, which
+      # is done in separate threads.
+      Thread.pass while Thread.list.count > 1
+    rescue
+      PUTS.error 'In main'
     end
   end
 end
