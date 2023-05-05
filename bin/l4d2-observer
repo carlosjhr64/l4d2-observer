@@ -1,7 +1,21 @@
 #!/usr/bin/env ruby
 # Used on L4D2 version: 2.2.2.6
 
-require 'help_parser'
+begin
+  ### Standard Library ###
+  require 'pty'
+  require 'yaml'
+  ### Gems ###
+  require 'rainbow/refinement'
+  require 'help_parser'
+rescue
+  warn $!.message
+  warn 'l4d2-observer was tested on:'
+  warn '* rainbow 3.1'
+  warn '* help_parser 8.2'
+  warn '* ruby 3.2'
+  exit 72
+end
 
 OPTIONS = HelpParser['1.0.230505', <<~HELP]
   ### L4D2 Friendly Fire Observer ###
@@ -22,18 +36,6 @@ OPTIONS = HelpParser['1.0.230505', <<~HELP]
   #   N defaults to 3
   #   admin defaults to "Caprichozo" (me :D)
 HELP
-
-begin
-  ### Standard Library ###
-  require 'pty'
-  require 'yaml'
-  ### Gems ###
-  require 'rainbow/refinement'
-rescue
-  warn $!.message
-  exit 72
-end
-
 HelpParser.int? :ff, :exposure, :pardons, :pity, :kicks
 
 SERVER_DIR = File.expand_path(OPTIONS.srcds_dir || '~/Steam/L4D2-server')

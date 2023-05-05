@@ -1,6 +1,6 @@
 # L4d2Observer
 
-* [VERSION 1.0.230504](https://github.com/carlosjhr64/l4d2-observer/releases)
+* [VERSION 1.0.230505](https://github.com/carlosjhr64/l4d2-observer/releases)
 * [github](https://www.github.com/carlosjhr64/l4d2-observer)
 
 ## DESCRIPTION
