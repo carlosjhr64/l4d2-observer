@@ -189,11 +189,11 @@ class Survivor
     increment_exposure victim, demerits(attacker)
   end
 
-  # For fairness, when a new player joins, the tallies of the other players are
-  # reduced by a par amount: min.
+  # For fairness, when a new player joins, the tallies of players are reduced
+  # by a par amount: min.
   def balance_rankings(newcomer)
     parf = names.reject{_1==newcomer}.map{ff(_1)}.min
-    decrement_ff_for_all(parf, except:newcomer)
+    decrement_ff_for_all(parf) # Allow kicked newcomers a reduction in FF
     parx = names.reject{_1==newcomer}.map{exposure(_1)}.min
     decrement_exposure_for_all(parx, except:newcomer)
     parp = names.reject{_1==newcomer}.map{pity(_1)}.min
