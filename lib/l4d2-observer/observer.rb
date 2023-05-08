@@ -241,10 +241,7 @@ class Observer
       # But text chat is still available(can't be disabled).
       # The Observer finds this very annoying and
       # kicks players that use text chat.
-      name = SURVIVOR.names.reverse.detect do |name|
-        line.start_with?(name+': ') || line.include?(' '+name+': ')
-      end
-      if name
+      if (name = SURVIVOR.names.reverse.detect{line.include? "#{_1}:"})
         PUTS.terminal line, :red
         cmd = kick!(name, 'kicked for chat')
       else
