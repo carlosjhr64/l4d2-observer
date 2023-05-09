@@ -164,8 +164,6 @@ run
 say
 send
 SERVER_DIR
-set_exposure
-set_ff
 set_id
 set_pardons
 set_timestamp

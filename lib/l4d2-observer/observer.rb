@@ -180,6 +180,10 @@ class Observer
           SURVIVOR.increment_kicks(survivor)
           cmd = say "#{survivor} #{$1}"
         else
+          if SURVIVOR.playtime(survivor) < VOTE_INTERVAL
+            # Count as a kick players who leave before the vote interval.
+            SURVIVOR.increment_kicks(survivor)
+          end
           cmd = rankings
         end
       end
