@@ -192,25 +192,23 @@ class Survivor
   # For fairness, when a new player joins, the tallies of players are reduced
   # by a par amount: min.
   def balance_rankings(newcomer)
-    parf = names.reject{_1==newcomer}.map{ff(_1)}.min
-    decrement_ff_for_all(parf) # Allow kicked newcomers a reduction in FF
-    parx = names.reject{_1==newcomer}.map{exposure(_1)}.min
+    parf = names.reject{_1==newcomer}.map{ff _1}.min
+    decrement_ff_for_all(parf, except:newcomer)
+    parx = names.reject{_1==newcomer}.map{exposure _1}.min
     decrement_exposure_for_all(parx, except:newcomer)
-    parp = names.reject{_1==newcomer}.map{pity(_1)}.min
+    parp = names.reject{_1==newcomer}.map{pity _1}.min
     decrement_pity_for_all(parp, except:newcomer)
   end
 
-  # After clearing a level, the FF and exposure tallies are reduced by a
+  # After clearing a level, the tallies are reduced by a
   # par amount: (min + max)/2.
   def clear_level
-    parf = names.map{|name| ff(name)}.minmax.sum / 2
-    parx = names.map{|name| exposure(name)}.minmax.sum / 2
-    names.each do |name|
-      ff = ff(name)
-      set_ff(name, ff <= parf ? 0 : ff - parf)
-      exposure = exposure(name)
-      set_exposure(name, exposure <= parx ? 0 : exposure - parx)
-    end
+    parf = names.map{ff _1}.minmax.sum/2
+    decrement_ff_for_all(parf)
+    parx = names.map{exposure _1}.minmax.sum/2
+    decrement_exposure_for_all(parx)
+    parp = names.map{pity _1}.minmax.sum/2
+    decrement_pity_for_all(parp)
   end
 end
 end
