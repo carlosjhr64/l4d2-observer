@@ -38,6 +38,14 @@ flowchart TD;
   UserInfo -->|Yes| ProcessUserInfo[Set user id];
   Attack -->|No| Dropped{Player disconnected?};
   Attack -->|Yes| ProcessAttack[Handle PvP attack]
+  Dropped -->|No| ChangeLevel{Level changed?}
+  Dropped -->|Yes| ProcessDropped[Remove player]
+  ChangeLevel -->|No| InitDirectorScript{All players died?}
+  ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon]
+  InitDirectorScript -->|No| DifficultyCheck{Playing Expert?}
+  InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players]
+  DifficultyCheck -->|No| PotentialVote{Vote call?}
+  DifficultyCheck -->|Yes| ProcessDifficultyCheck[Kick LVP if not playing expert] 
 ```
 ## INSTALL
 
