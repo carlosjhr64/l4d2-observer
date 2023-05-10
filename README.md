@@ -35,7 +35,7 @@ flowchart TD;
   Connected -->|No| UserInfo{User info?};
   Connected -->|Yes| ProcessConnected[Add user and request user info.];
   UserInfo -->|No| Attack{Attack?};
-  UserInfo -->|Yes| ProcessUserInfo[Set user id. May kick for name-id issues.];
+  UserInfo -->|Yes| ProcessUserInfo[Set user id and lightly par reduce tallies. May kick for name-id issues.];
   ProcessConnected -.-> ProcessUserInfo;
   Attack -->|No| Dropped{Player disconnected?};
   Attack -->|Yes| ProcessAttack[Handle PvP attack. A kick may occur.]
@@ -44,7 +44,7 @@ flowchart TD;
   ProcessUserInfo -.-> ProcessDropped
   ProcessAttack -.-> ProcessDropped
   ChangeLevel -->|No| InitDirectorScript{All players died?}
-  ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon]
+  ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon and par reduce tallies]
   InitDirectorScript -->|No| DifficultyCheck{Difficulty check?}
   InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players]
   DifficultyCheck -->|No| PotentialVote{Vote call?}
