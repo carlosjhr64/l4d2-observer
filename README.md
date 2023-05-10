@@ -33,9 +33,10 @@ Types:
 flowchart TD;
   LogMsg[/Server log message/] --> Connected{Player connected?};
   Connected -->|No| UserInfo{User info?};
-  Connected -->|Yes| ProcessConnected[Add user];
+  Connected -->|Yes| ProcessConnected[Add user and request user info];
   UserInfo -->|No| Attack{Attack?};
   UserInfo -->|Yes| ProcessUserInfo[Set user id];
+  ProcessConnected -.-> ProcessUserInfo;
   Attack -->|No| Dropped{Player disconnected?};
   Attack -->|Yes| ProcessAttack[Handle PvP attack]
   Dropped -->|No| ChangeLevel{Level changed?}
