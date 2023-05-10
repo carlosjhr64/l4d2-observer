@@ -31,11 +31,13 @@ Types:
 ## FLOWCHART
 ```mermaid
 flowchart TD
-  A[/Server log message/]-->B{Client connected?}
-  B-->|No| C{User info?}
-  B-->|Yes| Bp[Add user]
-  C-->|No| D{Attack?}
-  C-->|Yes| Cp[Set user id]
+  LogMsg[/Server log message/] --> Connected{Player connected?}
+
+  Connected --> |No|  UserInfo{User info?}
+  Connected --> |Yes| ProcessConnected[Add user]
+
+  UserInfo --> |No|  Attack{Attack?}
+  UserInfo --> |Yes| ProcessUserInfo[Set user id]
 ```
 ## INSTALL
 
