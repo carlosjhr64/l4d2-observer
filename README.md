@@ -28,6 +28,14 @@ Types:
 #   N defaults to 3
 #   admin defaults to "Caprichozo" (me :D)
 ```
+## FLOWCHART
+```mermaid
+graph TD;
+  A-->B;
+  A-->C;
+  B-->D;
+  C-->D;
+```
 ## INSTALL
 
 You'll need:
