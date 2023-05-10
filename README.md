@@ -36,6 +36,8 @@ flowchart TD;
   Connected -->|Yes| ProcessConnected[Add user];
   UserInfo -->|No| Attack{Attack?};
   UserInfo -->|Yes| ProcessUserInfo[Set user id];
+  Attack -->|No| Dropped{Player disconnected?};
+  Attack -->|Yes| ProcessAttack[Handle PvP attack]
 ```
 ## INSTALL
 
