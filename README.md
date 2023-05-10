@@ -32,8 +32,9 @@ Types:
 ```mermaid
 flowchart TD;
   A[/Server log message/]-->B{Client connected?};
-  B-->|Yes|D;
-  B-->|No|E;
+  B-->|No|C{User info?};
+flowchart LR;
+  BP-->|Yes|[Add user];
 ```
 ## INSTALL
 
