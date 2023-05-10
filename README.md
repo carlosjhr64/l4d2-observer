@@ -34,7 +34,7 @@ flowchart TD;
   A[/Server log message/]-->B{Client connected?};
   B-->|No|C{User info?};
 flowchart LR;
-  BP-->|Yes|[Add user];
+  B-->|Yes|PB[Add user];
 ```
 ## INSTALL
 
