@@ -40,7 +40,8 @@ flowchart TD;
   Attack -->|No| Dropped{Player disconnected?};
   Attack -->|Yes| ProcessAttack[Handle PvP attack. A kick may occur.]
   Dropped -->|No| ChangeLevel{Level changed?}
-  Dropped -->|Yes| ProcessDropped[Remove player]
+  Dropped -->|Yes| ProcessDropped[Remove player. If this is a result of kick vote, kick LVP.]
+  ProcessDropped -.-> ProcessDropped
   ProcessUserInfo -.-> ProcessDropped
   ProcessAttack -.-> ProcessDropped
   ChangeLevel -->|No| InitDirectorScript{All players died?}
