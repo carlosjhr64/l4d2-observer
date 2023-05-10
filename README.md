@@ -49,6 +49,7 @@ flowchart TD;
   InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players]
   DifficultyCheck -->|No| PotentialVote{Vote call?}
   DifficultyCheck -->|Yes| ProcessDifficultyCheck[Kick LVP if not playing expert] 
+  ProcessDifficultyCheck -.-> ProcessDropped
   PotentialVote --> |No| IdleKick{Admin kick request?}
   PotentialVote --> |Yes| ProcessPotentialVote[Kick LVP if recently arrived]
   IdleKick --> |No| Chat{Someone chatted?}
