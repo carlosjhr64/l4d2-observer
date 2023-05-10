@@ -42,10 +42,16 @@ flowchart TD;
   Dropped -->|Yes| ProcessDropped[Remove player]
   ChangeLevel -->|No| InitDirectorScript{All players died?}
   ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon]
-  InitDirectorScript -->|No| DifficultyCheck{Playing Expert?}
+  InitDirectorScript -->|No| DifficultyCheck{Difficulty check?}
   InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players]
   DifficultyCheck -->|No| PotentialVote{Vote call?}
   DifficultyCheck -->|Yes| ProcessDifficultyCheck[Kick LVP if not playing expert] 
+  PotentialVote --> |No| IdleKick{Admin kick request?}
+  PotentialVote --> |Yes| ProcessPotentialVote[Kick LVP if recently arrived]
+  IdleKick --> |No| Chat{Someone chatted?}
+  IdleKick --> |Yes| ProcessIdleKick[Kick idle player as per admin's request]
+  Chat --> |No| Stop([Done!])
+  Chat --> |Yes| ProcessChat[Kick chatty player]
 ```
 ## INSTALL
 
