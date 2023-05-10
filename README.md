@@ -46,7 +46,7 @@ flowchart TD;
   ChangeLevel -->|No| InitDirectorScript{All players died?}
   ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon and par reduce tallies]
   InitDirectorScript -->|No| DifficultyCheck{Difficulty check?}
-  InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players]
+  InitDirectorScript -->|Yes| ProcessInitDirectorScript[Pitty the dead players with at least one pardon]
   DifficultyCheck -->|No| PotentialVote{Vote call?}
   DifficultyCheck -->|Yes| ProcessDifficultyCheck[Kick LVP if not playing expert] 
   ProcessDifficultyCheck -.-> ProcessDropped
