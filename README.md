@@ -33,8 +33,7 @@ Types:
 flowchart TD;
   A[/Server log message/]-->B{Client connected?};
   B-->|No| C{User info?};
-  subgraph LR;
-    B-->|Yes| Bp[Add user];
+  B-->|Yes| Bp[Add user];
 ```
 ## INSTALL
 
