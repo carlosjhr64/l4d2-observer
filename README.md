@@ -41,7 +41,7 @@ flowchart TD;
   Attack -->|Yes| ProcessAttack[Handle PvP attack]
   Dropped -->|No| ChangeLevel{Level changed?}
   Dropped -->|Yes| ProcessDropped[Remove player]
-  UserInfo -.-> ProcessDropped
+  ProcessUserInfo -.-> ProcessDropped
   ChangeLevel -->|No| InitDirectorScript{All players died?}
   ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon]
   InitDirectorScript -->|No| DifficultyCheck{Difficulty check?}
