@@ -33,14 +33,15 @@ Types:
 flowchart TD;
   LogMsg[/Server log message/] --> Connected{Player connected?};
   Connected -->|No| UserInfo{User info?};
-  Connected -->|Yes| ProcessConnected[Add user and request user info];
+  Connected -->|Yes| ProcessConnected[Add user and request user info.];
   UserInfo -->|No| Attack{Attack?};
-  UserInfo -->|Yes| ProcessUserInfo[Set user id];
+  UserInfo -->|Yes| ProcessUserInfo[Set user id. May kick for name-id issues.];
   ProcessConnected -.-> ProcessUserInfo;
   Attack -->|No| Dropped{Player disconnected?};
   Attack -->|Yes| ProcessAttack[Handle PvP attack]
   Dropped -->|No| ChangeLevel{Level changed?}
   Dropped -->|Yes| ProcessDropped[Remove player]
+  UserInfo -.-> ProcessDropped
   ChangeLevel -->|No| InitDirectorScript{All players died?}
   ChangeLevel -->|Yes| ProcessChangeLevel[Reward players with a pardon]
   InitDirectorScript -->|No| DifficultyCheck{Difficulty check?}
