@@ -30,11 +30,11 @@ Types:
 ```
 ## FLOWCHART
 ```mermaid
-graph TD;
-  A-->B;
-  A-->C;
-  B-->D;
-  C-->D;
+flowchart TD
+  A[/Server log message/]-->B{Client connected?}
+  A-->C
+  B-->D
+  C-->D
 ```
 ## INSTALL
 
