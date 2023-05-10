@@ -52,10 +52,13 @@ flowchart TD;
   ProcessDifficultyCheck -.-> ProcessDropped
   PotentialVote --> |No| IdleKick{Admin kick request?}
   PotentialVote --> |Yes| ProcessPotentialVote[Kick LVP if recently arrived]
+  PotentialVote -.-> ProcessDropped
   IdleKick --> |No| Chat{Someone chatted?}
   IdleKick --> |Yes| ProcessIdleKick[Kick idle player as per admin's request]
+  ProcessIdleKick -.-> ProcessDropped
   Chat --> |No| Stop([Done!])
   Chat --> |Yes| ProcessChat[Kick chatty player]
+  ProcessChat -.-> ProcessDropped
 ```
 ## INSTALL
 
