@@ -30,10 +30,10 @@ Types:
 ```
 ## FLOWCHART
 ```mermaid
-flowchart TD;
-  A[/Server log message/]-->B{Client connected?};
-  B-->|No| C{User info?};
-  B-->|Yes| Bp[Add user];
+flowchart TD
+  A[/Server log message/]-->B{Client connected?}
+  direction LR B-->|No| C{User info?}
+  B-->|Yes| Bp[Add user]
 ```
 ## INSTALL
 
