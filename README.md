@@ -1,6 +1,6 @@
 # L4d2Observer
 
-* [VERSION 1.0.230505](https://github.com/carlosjhr64/l4d2-observer/releases)
+* [VERSION 1.0.230511](https://github.com/carlosjhr64/l4d2-observer/releases)
 * [github](https://www.github.com/carlosjhr64/l4d2-observer)
 
 ## DESCRIPTION
@@ -76,8 +76,10 @@ git clone git@github.com:carlosjhr64/l4d2-observer.git
 cd l4d2-observer
 ./bin/compile > l4d2-observer
 mv l4d2-observer /path-to/bin/l4d2-observer
-# And just run it...
+# You may need to set it as an excutable
+chmod u+x /path-to/bin/l4d2-observer
 screen # preferably so that you can detach
+# And just run it...
 l4d2-observer --admin=yourPlayerName
 ```
 Please read the code for all the goodies!
