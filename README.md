@@ -51,7 +51,15 @@ Types:
 #   N defaults to 3
 #   admin defaults to "Caprichozo" (me :D)
 ```
+## MOTD
+
+The following is a suggested `motd.txt`:
+```
+# TODO
+```
 ## FLOWCHART
+
+The following flowchart describes `Observer#process(line)` in `l4d2-observer/observer.rb`:
 ```mermaid
 flowchart TD;
   LogMsg[/Server log message/] --> Connected{Player connected?};
