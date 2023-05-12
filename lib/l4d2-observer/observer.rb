@@ -136,6 +136,10 @@ class Observer
         if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
           cmd = say "#{survivor} is a troll!"
         else
+          if @admin.nil? || survivor==ADMIN
+            @admin = survivor
+            PUTS.console say "New Game Admin: #{survivor}"
+          end
           SURVIVOR.balance_rankings(survivor)
           cmd = rankings
         end
@@ -164,12 +168,22 @@ class Observer
       end
     when /^Dropped (.+) from server \((.+)\)$/
       # A player has disconnected from the server.
-      survivor,why = $1,$2
-      SURVIVOR.delete survivor if SURVIVOR.active? survivor
+      dropped,why = $1,$2
+      SURVIVOR.delete dropped if SURVIVOR.active? dropped
       PUTS.terminal line, :cyan
       if SURVIVOR.none?
         cmd = 'exit' # Quit if all players are gone.
       else
+        if dropped==@admin
+          max = 0.0
+          SURVIVOR.names.each do |name|
+            playtime = SURVIVOR.playtime(name)
+            if max < playtime
+              max =  playtime
+              @admin = name
+            end
+          end
+        end
         case why
         when 'Kicked by Console : You have been voted off'
           # The Observer is very jealous of its job and doesn't like it when
@@ -177,12 +191,12 @@ class Observer
           cmd = kick!(SURVIVOR.lvp, 'kicked for kick vote')
         when /"(kicked .*)"$/
           # A player has been kicked from the server by the Observer.
-          SURVIVOR.increment_kicks(survivor)
-          cmd = say "#{survivor} #{$1}"
+          SURVIVOR.increment_kicks(dropped)
+          cmd = say "#{dropped} #{$1}"
         else
-          if SURVIVOR.playtime(survivor) < VOTE_INTERVAL
+          if SURVIVOR.playtime(dropped) < VOTE_INTERVAL
             # Count as a kick players who leave before the vote interval.
-            SURVIVOR.increment_kicks(survivor)
+            SURVIVOR.increment_kicks(dropped)
           end
           cmd = rankings
         end
@@ -230,14 +244,14 @@ class Observer
         # But seriously, this prevents server hijacking.
         cmd = kick!(lvp, 'kicked for potential vote')
       end
-    when /\b#{ADMIN}: !idle([1234])$/
+    when /\b#{@admin}: !idle([1234])$/
       # It's very hard to detect idle players from the server's log.
       # When the server admin plays, the admin gets to kick players...
       # meant to be used against idle players.
       # Note that one can configure the controller to send messages to the
       # console.
       PUTS.terminal line, :red
-      if (name = SURVIVOR.names[$1.to_i - 1]) && name != ADMIN
+      if (name = SURVIVOR.names[$1.to_i - 1]) && name != @admin
         cmd = kick!(name, 'kicked for idle')
       end
     else
@@ -282,8 +296,7 @@ class Observer
   end
 
   # The server is started with the -console option. This allows us to send
-  # commands to the server via stdin. This is useful for kicking players and
-  # changing the trace level.
+  # commands to the server via stdin. This is used to change the trace level.
   def handle_stdin
     while (cmd = $stdin.gets)
       cmd.strip!
@@ -296,12 +309,6 @@ class Observer
         @trace = @verbose = false
       when 'quit'
         PUTS.terminal "Don't say quit, say exit please."
-      when /^!kick\s+(\S.*)$/
-        name = $1
-        if (name = SURVIVOR.names.reverse.detect{_1.start_with? name}) &&
-           name != ADMIN
-          PUTS.console kick!(name, 'kicked for idle')
-        end
       else
         # If none of the above, then send the command to the server via console.
         @trace = true # will want to see the output
@@ -330,7 +337,7 @@ class Observer
   end
 
   def initialize
-    @pardoned = nil
+    @admin = @pardoned = nil
     @difficulty = @rankings = Time.now
     @trace = @verbose = false
     PTY.spawn(CMD) do |reader, writer, _pid|
