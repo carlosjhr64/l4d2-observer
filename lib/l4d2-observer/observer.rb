@@ -183,6 +183,7 @@ class Observer
               @admin = name
             end
           end
+          PUTS.console say "New Game Admin: #{survivor}"
         end
         case why
         when 'Kicked by Console : You have been voted off'

@@ -17,7 +17,7 @@ rescue
   exit 72
 end
 
-OPTIONS = HelpParser['1.0.230511', <<~HELP]
+OPTIONS = HelpParser['1.0.230512', <<~HELP]
   ### L4D2 Friendly Fire Observer ###
   Usage:
     l4d2-observer [:options+] [<srcds_dir>]
