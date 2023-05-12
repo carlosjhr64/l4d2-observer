@@ -16,6 +16,7 @@ class Observer
         display = display.gsub(X, '')
         display = display[0...13]+X if display.length > 14
       end
+      display = "#{number+=1}:#{display}"
       if name == @pardoned
         # If the player was pardoned, display their name in exclamations.
         @pardoned = nil
