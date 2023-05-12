@@ -7,7 +7,7 @@ class Observer
     "say  #{string}"
   end
 
-  def display(name)
+  def fix(name)
     display = name.gsub(/\W+/, X)
     if display.length > 14
       display = display.gsub(X, '')
@@ -21,7 +21,7 @@ class Observer
   def rankings
     number = 0
     survivors_tally = SURVIVOR.names.map do |name|
-      display = display(name)
+      display = fix(name)
       display = "#{number+=1}:#{display}"
       if name == @pardoned
         # If the player was pardoned, display their name in exclamations.
@@ -141,11 +141,11 @@ class Observer
       when TrueClass
         PUTS.terminal line, :yellow
         if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
-          cmd = say "#{display(survivor)} is a troll!"
+          cmd = say "#{fix(survivor)} is a troll!"
         else
           if @admin.nil? || survivor==ADMIN
             @admin = survivor
-            PUTS.console say "New Game Admin #{display(survivor)}"
+            PUTS.console say "New Game Admin #{fix(survivor)}"
           end
           SURVIVOR.balance_rankings(survivor)
           cmd = rankings
@@ -190,7 +190,7 @@ class Observer
               @admin = name
             end
           end
-          PUTS.console say "New Game Admin #{display(survivor)}"
+          PUTS.console say "New Game Admin #{fix(@admin)}"
         end
         case why
         when 'Kicked by Console : You have been voted off'
@@ -200,7 +200,7 @@ class Observer
         when /"(kicked .*)"$/
           # A player has been kicked from the server by the Observer.
           SURVIVOR.increment_kicks(dropped)
-          cmd = say "#{display(dropped)} #{$1}"
+          cmd = say "#{fix(dropped)} #{$1}"
         else
           if SURVIVOR.playtime(dropped) < VOTE_INTERVAL
             # Count as a kick players who leave before the vote interval.
