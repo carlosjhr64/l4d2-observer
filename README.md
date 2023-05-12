@@ -95,6 +95,17 @@ After having played at least 3 minutes, pardons are granted for:
 
 Tallies are re-balanced by a par minimum when a new player joins the game, and
 by a par middle when a level is completed.
+
+# Other kicks
+
+* There is no tolerance for chat, not even with pardons
+* After 3 kicks, a player(troll) will be kicked on any FF or exposure
+* On a vote call, the last player will be kicked unless played least 3 minutes
+* Unless in expert mode, last player gets kicked every 3 minutes
+* A vote to kick will also kick the last player
+
+The server is meant to be played for an entire uninterrupted campaign in expert
+mode. The vote suppression is meant to stop server hijacking.
 ```
 ## FLOWCHART
 
