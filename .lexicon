@@ -44,6 +44,7 @@ Dir
 directory
 dirname
 display
+dropped
 dump
 each
 EIO
@@ -104,6 +105,7 @@ loop
 lvp
 magenta
 map
+max
 message
 min
 minmax
@@ -117,6 +119,7 @@ names
 negative
 new
 newcomer
+nil
 none
 now
 Observer
@@ -172,7 +175,6 @@ sleep
 spawn
 split
 srcds_dir
-start_with
 strftime
 string
 String

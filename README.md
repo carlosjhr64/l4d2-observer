@@ -1,11 +1,34 @@
 # L4d2Observer
 
-* [VERSION 1.0.230511](https://github.com/carlosjhr64/l4d2-observer/releases)
+* [VERSION 1.0.230512](https://github.com/carlosjhr64/l4d2-observer/releases)
 * [github](https://www.github.com/carlosjhr64/l4d2-observer)
 
 ## DESCRIPTION
 
 A L4D2 server observer that kicks players out for poor play.
+
+## INSTALL
+
+You'll need:
+
+* Ruby 3.2 and the following gems:
+  * help_parser
+  * rainbow
+* Runs on Linux
+* Obviously a working L4D2 dedicated server:
+  * See [Linode's guide](https://www.linode.com/docs/guides/left-4-dead-2-multiplayer-server-installation/)
+```console
+git clone git@github.com:carlosjhr64/l4d2-observer.git
+cd l4d2-observer
+./bin/compile > l4d2-observer
+mv l4d2-observer /path-to/bin/l4d2-observer
+# You may need to set it as an excutable
+chmod u+x /path-to/bin/l4d2-observer
+screen # preferably so that you can detach
+# And just run it...
+l4d2-observer --admin=yourPlayerName
+```
+Please read the code for all the goodies!
 
 ## HELP
 ```console
@@ -61,29 +84,6 @@ flowchart TD;
   Chat --> |Yes| ProcessChat[Kick chatty player]
   ProcessChat -.-> ProcessDropped
 ```
-## INSTALL
-
-You'll need:
-
-* Ruby 3.2 and the following gems:
-  * help_parser
-  * rainbow
-* Runs on Linux
-* Obviously a working L4D2 dedicated server:
-  * See [Linode's guide](https://www.linode.com/docs/guides/left-4-dead-2-multiplayer-server-installation/)
-```console
-git clone git@github.com:carlosjhr64/l4d2-observer.git
-cd l4d2-observer
-./bin/compile > l4d2-observer
-mv l4d2-observer /path-to/bin/l4d2-observer
-# You may need to set it as an excutable
-chmod u+x /path-to/bin/l4d2-observer
-screen # preferably so that you can detach
-# And just run it...
-l4d2-observer --admin=yourPlayerName
-```
-Please read the code for all the goodies!
-
 ## LICENSE
 
 Copyright (c) 2023 CarlosJHR64
