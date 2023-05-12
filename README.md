@@ -102,7 +102,7 @@ by a par middle when a level is completed.
 * After 3 kicks, a player(troll) will be kicked on any FF or exposure
 * On a vote call, last player will be kicked unless played at least 3 minutes
 * Unless in expert mode, last player gets kicked every 3 minutes
-* A vote to kick will also kicks the last player
+* A vote to kick will also kick the last player
 
 The server is meant to be played for an entire uninterrupted campaign in expert
 mode. The vote suppression is meant to stop server hijacking.
