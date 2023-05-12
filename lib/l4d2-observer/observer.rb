@@ -10,6 +10,7 @@ class Observer
   # Every time rankings change,
   # the server displays the new rankings to all players.
   def rankings
+    number = 0
     survivors_tally = SURVIVOR.names.map do |name|
       display = name.gsub(/\W+/, X)
       if display.length > 14
