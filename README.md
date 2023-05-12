@@ -54,12 +54,52 @@ Types:
 ## MOTD
 
 The following is a suggested `motd.txt`:
-```
-# TODO
+```markdown
+# Need to know
+
+Server autokicks for:
+
+* Chat
+* Friendly Fire(FF)
+* Exposure to FF
+* Vote
+
+Thanks for playing!
+
+# Reconnect
+
+If kicked, you may reconnect via console:
+
+    connect [the.dedicated.server.ip]
+
+# NOT A MOD
+
+It's a VAC server and you will be awarded any achievement in the game.
+See L4D2-Observer:
+
+    https://github.com/carlosjhr64/l4d2-observer
+
+# Rankings and tallies
+
+Rankings and FF tallies are eventfully displayed as:
+
+    FirstPLayer-FF-Exposure-Pardons ... LastPlayer-FF-Exposure-Pardons
+
+Every FF will demote you down to last place at which point you'll be kicked.
+You'll also be kicked for excessive FF(>3) and exposure(>3).
+
+After having played at least 3 minutes, pardons are granted for:
+
+* Pity after team death, 1 if player has none, up to 3 times
+* Level completion, +1, up to 3 max
+
+Tallies are re-balanced by a par minimum when a new player joins the game, and
+by a par middle when a level is completed.
 ```
 ## FLOWCHART
 
-The following flowchart describes `Observer#process(line)` in `l4d2-observer/observer.rb`:
+The following flowchart describes `Observer#process(line)` in
+`l4d2-observer/observer.rb`:
 ```mermaid
 flowchart TD;
   LogMsg[/Server log message/] --> Connected{Player connected?};
