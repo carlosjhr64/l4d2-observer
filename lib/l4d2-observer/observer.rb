@@ -136,8 +136,9 @@ class Observer
       when String
         # There was a problem with the name.
         PUTS.terminal line, :red
-        SURVIVOR.delete(registered, id)
-        cmd = kickid(id, 'kicked for name registration issue')
+        if SURVIVOR.delete(registered, id)
+          cmd = kickid(id, 'kicked for name registration issue')
+        end
       when TrueClass
         PUTS.terminal line, :yellow
         if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
@@ -176,7 +177,7 @@ class Observer
     when /^Dropped (.+) from server \((.+)\)$/
       # A player has disconnected from the server.
       dropped,why = $1,$2
-      SURVIVOR.delete dropped if SURVIVOR.active? dropped
+      SURVIVOR.delete dropped
       PUTS.terminal line, :cyan
       if SURVIVOR.none?
         cmd = 'exit' # Quit if all players are gone.

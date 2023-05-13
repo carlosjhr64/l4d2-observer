@@ -113,14 +113,11 @@ class Survivor
 
   # Player has left the game.
   def delete(name, id=nil)
-    if @players.include?(name)
+    if active?(name) || (id && (name=name(id)) && active?(name))
       @players.delete name
       set_id(name, nil)
       set_pardons(name, 0)
-    elsif id && (name=name(id)) && @players.include?(name)
-      @players.delete name
-      set_id(name, nil)
-      set_pardons(name, 0)
+      name
     end
   end
 
