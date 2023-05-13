@@ -149,6 +149,8 @@ class Survivor
 
   def playtime(name)
     Time.now - timestamp(name)
+  rescue
+    0.0
   end
 
   def positive(amount)
