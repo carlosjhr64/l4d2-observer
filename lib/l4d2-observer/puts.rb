@@ -26,7 +26,8 @@ class Puts
   end
 
   def error(string, c = :magenta)
-    n = $!.backtrace[0].split(':')[1]
+    # n is the first 3 line numbers of the backtrace
+    n = $!.backtrace[0..2].map{_1.split(':')[1]}.join(',')
     terminal "### #{string}(#{n}) ###", c
     terminal $!.class.to_s, c
     terminal $!.message, c
