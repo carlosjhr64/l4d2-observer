@@ -117,8 +117,7 @@ class Survivor
       @players.delete name
       set_id(name, nil)
       set_pardons(name, 0)
-    end
-    if id && (name=name(id)) && @players.include(name)
+    elsif id && (name=name(id)) && @players.include?(name)
       @players.delete name
       set_id(name, nil)
       set_pardons(name, 0)
