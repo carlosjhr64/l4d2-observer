@@ -103,6 +103,7 @@ by a par middle when a level is completed.
 * On a vote call, last player will be kicked unless played at least 3 minutes
 * Unless in expert mode, last player gets kicked every 3 minutes
 * A vote to kick will also kick the last player
+* Name changes or weird names can cause a kick
 
 The server is meant to be played for an entire uninterrupted campaign in expert
 mode. The vote suppression is meant to stop server hijacking.
