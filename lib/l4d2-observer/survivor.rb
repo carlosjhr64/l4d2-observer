@@ -92,10 +92,11 @@ class Survivor
   end
 
   # Check if a player name is sharing an ip with another player name.
+  # This would cause a tally to be shared via TALLY[ip].
   # It's possible that a player changed their name.
   def shared_ip?(name)
     if (tally = @tallies[name])
-      @names.count{@tallies[_1]==tally} > 1
+      @players.count{@tallies[_1]==tally} > 1
     else
       false
     end
