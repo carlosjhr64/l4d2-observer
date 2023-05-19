@@ -34,7 +34,7 @@ class Observer
     end
     .join('  ')
     @rankings = Time.now
-    say survivors_tally
+    survivors_tally
   end
 
   # The kickid command is used to kick players by their id.
@@ -117,142 +117,170 @@ class Observer
     end
   end
 
+  def potential_vote
+    lvp = SURVIVOR.lvp
+    if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
+      # Pissed off by the vote call, the Observer kicks the LVP if
+      # the LVP has not played long enough.
+      # But seriously, this prevents server hijacking.
+      PUTS.console kick!(lvp, 'kicked for potential vote')
+    end
+  end
+
+  def z_difficulty(difficulty)
+    return if difficulty == 'Impossible' || SURVIVOR.lvp.nil?
+
+    # The difficulty has been changed to something other than impossible.
+    # This pisses off the Observer and so kicks the LVP.
+    PUTS.console kick! SURVIVOR.lvp, 'kicked for not playing expert'
+  end
+
+  def level_restart
+    SURVIVOR.names.each do |name|
+      next unless SURVIVOR.playtime(name) > VOTE_INTERVAL &&
+                  SURVIVOR.pardons(name) < 1 &&
+                  SURVIVOR.pity(name) < PITY_LIMIT
+
+      # The players have been killed... pity them.
+      # Give a pardon to the player without pardons and
+      # that has not exceded their pity.
+      SURVIVOR.set_pardons(name, 1)
+      SURVIVOR.increment_pity(name)
+    end
+  end
+
+  def change_level
+    SURVIVOR.clear_level
+    SURVIVOR.names.each do |name|
+      next unless SURVIVOR.pardons(name) < PARDONS_LIMIT &&
+                  SURVIVOR.playtime(name) > VOTE_INTERVAL
+
+      # As a reward for playing a while, give a pardon.
+      SURVIVOR.increment_pardons(name)
+    end
+  end
+
+  def dropped(dropped, why)
+    SURVIVOR.delete dropped
+    SURVIVOR.set_pardons(dropped, 0) # Pardons are for staying.
+    if SURVIVOR.playtime(dropped) < VOTE_INTERVAL
+      # Players who leave before the vote interval are tallied as a kick.
+      # This may be in addition to a tallied kick.
+      SURVIVOR.increment_kicks(dropped)
+    end
+
+    # Quit if all players are gone.
+    if SURVIVOR.none?
+      PUTS.console 'exit'
+      return # Don't mind a kick on lone survivor(as for chat?).
+    end
+
+    case why
+    when 'Kicked by Console : You have been voted off'
+      # The Observer is very jealous of its job and doesn't like it when
+      # players vote to kick. Only the Observer kicks players off!
+      PUTS.console kick!(SURVIVOR.lvp, 'kicked for kick vote')
+    when /"(kicked .*)"$/
+      # A player has been kicked from the server by the Observer.
+      SURVIVOR.increment_kicks(dropped)
+      PUTS.console say "#{fix(dropped)} #{$1}"
+    end
+
+    if dropped==@admin
+      max = 0.0
+      SURVIVOR.names.each do |name|
+        playtime = SURVIVOR.playtime(name)
+        if max < playtime
+          max =  playtime
+          @admin = name
+        end
+      end
+      PUTS.console say "New Game Admin #{fix(@admin)}"
+    end
+
+    PUTS.console say rankings
+  end
+
+  def attacked(attacker, victim)
+    pvp = SURVIVOR.pvp?(attacker, victim)
+    case pvp
+    when String
+      # A player changed their name. Sending the "users" command to get the
+      # cheater's id and kick the cheater out.
+      PUTS.console 'users'
+    when TrueClass
+      SURVIVOR.tallies(attacker, victim)
+      if (cmd = kick?(attacker, victim))
+        PUTS.console cmd
+      else
+        SURVIVOR.demote attacker
+        PUTS.console say rankings
+      end
+    end
+  end
+
+  def user_info(id, survivor)
+    registered = SURVIVOR.register!(survivor, id)
+    case registered
+    when String
+      # There was a problem with the name.
+      if SURVIVOR.delete(registered, id)
+        PUTS.console kickid(id, 'kicked for name registration issue')
+      end
+    when TrueClass
+      if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
+        PUTS.console say "#{fix(survivor)} is a troll!"
+      else
+        if @admin.nil? || survivor==ADMIN
+          @admin = survivor
+          PUTS.console say "New Game Admin #{fix(survivor)}"
+        end
+        SURVIVOR.balance_rankings(survivor)
+        PUTS.console say rankings
+      end
+    end
+  end
+
+  def client_connected(survivor, ip)
+    SURVIVOR.add survivor, ip
+    PUTS.console 'users' # show user info for players on the server
+  end
+
   # Here I process each line the server outputs.
   def process(line)
-    cmd = nil
     case line
     when /Client "(.*)" connected \(([^:]*):.*\)\.$/
       # A new player has connected to the server.
       # Could not anchor start of line bc previous line error joins sometimes.
-      SURVIVOR.add $1, $2 # survivor, ip
-      PUTS.terminal line, :cyan
-      PUTS.console 'users' # show user info for players on the server
+      PUTS.terminal line, :blue
+      client_connected($1, $2) # survivor,ip = $1,$2
     when /^\d+:(\d+):"(.*)"$/
       # This line is the result of the "users" console command.
       # This is information about a player on the server.
-      id,survivor = $1,$2
-      registered = SURVIVOR.register!(survivor, id)
-      case registered
-      when String
-        # There was a problem with the name.
-        PUTS.terminal line, :red
-        if SURVIVOR.delete(registered, id)
-          cmd = kickid(id, 'kicked for name registration issue')
-        end
-      when TrueClass
-        PUTS.terminal line, :yellow
-        if SURVIVOR.kicks(survivor) > EXCESSIVE_KICKS
-          cmd = say "#{fix(survivor)} is a troll!"
-        else
-          if @admin.nil? || survivor==ADMIN
-            @admin = survivor
-            PUTS.console say "New Game Admin #{fix(survivor)}"
-          end
-          SURVIVOR.balance_rankings(survivor)
-          cmd = rankings
-        end
-      else
-        PUTS.terminal line if @verbose
-      end
+      PUTS.terminal line, :green
+      user_info($1, $2) # id,survivor = $1,$2
     when /^(.*) attacked (.*)$/
       # A player has attacked another player.
-      attacker, victim = $1, $2
-      pvp = SURVIVOR.pvp?(attacker, victim)
-      case pvp
-      when String
-        # A player changed their name. Sending the "users" command to get the
-        # cheater's id and kick the cheater out.
-        PUTS.terminal line, :red
-        PUTS.console 'users'
-      when TrueClass
-        PUTS.terminal line, :red
-        SURVIVOR.tallies(attacker, victim)
-        unless (cmd = kick?(attacker, victim))
-          SURVIVOR.demote attacker
-          cmd = rankings
-        end
-      when FalseClass
-        PUTS.terminal line, :yellow
-      end
+      PUTS.terminal line, :red
+      attacked($1, $2) # attacker,victim = $1,$2
     when /^Dropped (.+) from server \((.+)\)$/
       # A player has disconnected from the server.
-      dropped,why = $1,$2
-      SURVIVOR.delete dropped
-      PUTS.terminal line, :cyan
-      if SURVIVOR.none?
-        cmd = 'exit' # Quit if all players are gone.
-      else
-        if dropped==@admin
-          max = 0.0
-          SURVIVOR.names.each do |name|
-            playtime = SURVIVOR.playtime(name)
-            if max < playtime
-              max =  playtime
-              @admin = name
-            end
-          end
-          PUTS.console say "New Game Admin #{fix(@admin)}"
-        end
-        case why
-        when 'Kicked by Console : You have been voted off'
-          # The Observer is very jealous of its job and doesn't like it when
-          # players vote to kick. Only the Observer kicks players off!
-          cmd = kick!(SURVIVOR.lvp, 'kicked for kick vote')
-        when /"(kicked .*)"$/
-          # A player has been kicked from the server by the Observer.
-          SURVIVOR.increment_kicks(dropped)
-          cmd = say "#{fix(dropped)} #{$1}"
-        else
-          if SURVIVOR.playtime(dropped) < VOTE_INTERVAL
-            # Count as a kick players who leave before the vote interval.
-            SURVIVOR.increment_kicks(dropped)
-          end
-          cmd = rankings
-        end
-      end
+      PUTS.terminal line, :blue
+      dropped($1, $2) # dropped,why = $1,$2
     when '---- Host_Changelevel ----'
+      # Players made it to the safe room.
       PUTS.terminal line, :yellow
-      SURVIVOR.clear_level
-      SURVIVOR.names.each do |name|
-        next unless SURVIVOR.pardons(name) < PARDONS_LIMIT &&
-                    SURVIVOR.playtime(name) > VOTE_INTERVAL
-
-        # As a reward for playing a while, give a pardon.
-        SURVIVOR.increment_pardons(name)
-      end
+      change_level
     when "Initializing Director's script"
+      # Players have all died
       PUTS.terminal line, :yellow
-      SURVIVOR.names.each do |name|
-        next unless SURVIVOR.playtime(name) > VOTE_INTERVAL &&
-                    SURVIVOR.pardons(name) < 1 &&
-                    SURVIVOR.pity(name) < PITY_LIMIT
-
-        # The players have been killed... pity them.
-        # Give a pardon to the player without pardons and
-        # that has not exceded their pity.
-        SURVIVOR.set_pardons(name, 1)
-        SURVIVOR.increment_pity(name)
-      end
+      level_restart
     when /^"z_difficulty" = "(\w+)"/
-      if $1 == 'Impossible'
-        PUTS.terminal line, :yellow
-      else
-        PUTS.terminal line, :red
-        if (lvp = SURVIVOR.lvp)
-          # The difficulty has been changed to something other than impossible.
-          # This pisses off the Observer and so kicks the LVP.
-          cmd = kick! lvp, 'kicked for not playing expert'
-        end
-      end
+      PUTS.terminal line, :yellow
+      z_difficulty($1)
     when /^Potential vote being called$/
       PUTS.terminal line, :red
-      lvp = SURVIVOR.lvp
-      if SURVIVOR.playtime(lvp) < VOTE_INTERVAL
-        # Pissed off by the vote call, the Observer kicks the LVP if
-        # the LVP has not played long enough.
-        # But seriously, this prevents server hijacking.
-        cmd = kick!(lvp, 'kicked for potential vote')
-      end
+      potential_vote
     when /\b#{@admin}: !idle([1234])$/
       # It's very hard to detect idle players from the server's log.
       # When the server admin plays, the admin gets to kick players...
@@ -261,7 +289,7 @@ class Observer
       # console.
       PUTS.terminal line, :red
       if (name = SURVIVOR.names[$1.to_i - 1]) && name != @admin
-        cmd = kick!(name, 'kicked for idle')
+        PUTS.console kick!(name, 'kicked for idle')
       end
     else
       # The sever config allows one to disable voice chat.
@@ -270,12 +298,11 @@ class Observer
       # kicks players that use text chat.
       if (name = SURVIVOR.names.reverse.detect{line.include? "#{_1}:"})
         PUTS.terminal line, :red
-        cmd = kick!(name, 'kicked for chat')
+        PUTS.console kick!(name, 'kicked for chat')
       else
         info(line)
       end
     end
-    PUTS.console cmd if cmd
   rescue
     PUTS.error 'In process'
   end
@@ -340,7 +367,7 @@ class Observer
         PUTS.console 'z_difficulty'
       elsif now - @rankings > RANDOM_TIME
         # If the rankings have not been displayed for a while, display them.
-        PUTS.console rankings unless SURVIVOR.none?
+        PUTS.console say rankings unless SURVIVOR.none?
       end
     end
   end

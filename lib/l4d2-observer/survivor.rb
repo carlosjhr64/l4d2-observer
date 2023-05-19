@@ -117,7 +117,6 @@ class Survivor
     if active?(name) || (id && (name=name(id)) && active?(name))
       @players.delete name
       set_id(name, nil)
-      set_pardons(name, 0)
       name
     end
   end
