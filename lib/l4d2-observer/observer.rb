@@ -392,7 +392,7 @@ class Observer
     @stdin_thread.kill
     @checks_thread.kill
     LINES.push :exit
-    SURVIVOR.dump File.join(CACHE, 'tally.yaml')
+    SURVIVOR.dump TALLY_DUMP
   end
 end
 end

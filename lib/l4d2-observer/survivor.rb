@@ -13,7 +13,7 @@ class Survivor
     'Rochelle' => true,
   }
 
-  TALLY = {}
+  TALLY = OPTIONS.tally? && File.exist?(TALLY_DUMP) ? YAML.load(TALLY_DUMP): {}
 
   Tally = Struct.new(:ff, :exposure, :pardons, :pity, :kicks,
                      :timestamp, :id) do

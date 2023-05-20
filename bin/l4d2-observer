@@ -28,6 +28,7 @@ OPTIONS = HelpParser['1.0.230519', <<~HELP]
     --pity=N    \tPity limit
     --kicks=N   \tKicks limit
     --admin=W   \tAdmin's name
+    --tally     \tLoad previous tally
   Types:
     N   /^\\d$/
     W   /^\\w+$/
@@ -69,6 +70,7 @@ RANDOM_TIME = 60
 CACHE = File.expand_path '~/.cache/l4d2-observer'
 Dir.mkdir File.expand_path CACHE unless File.exist? CACHE
 LOG = File.join CACHE, 'log'
+TALLY_DUMP = File.join CACHE, 'tally.yaml'
 if File.exist? LOG
   log = LOG+'.'+Time.now.strftime('%Y%m%d%H%M%S')
   File.rename(LOG, log)
