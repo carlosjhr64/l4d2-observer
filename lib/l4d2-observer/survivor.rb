@@ -23,7 +23,7 @@ class Survivor
     end
   end
 
-  def dump
+  def tall_dump
     File.open(TALLY_DUMP, 'w'){_1.puts YAML.dump(TALLY)}
   end
 
