@@ -103,6 +103,7 @@ level_restart
 line
 LINES
 list
+load
 log
 LOG
 LOGS
@@ -198,6 +199,7 @@ tallies
 tally
 Tally
 TALLY
+TALLY_DUMP
 terminal
 Thread
 Time
