@@ -23,8 +23,8 @@ class Survivor
     end
   end
 
-  def dump(file)
-    File.open(file, 'w'){_1.puts YAML.dump(TALLY)}
+  def dump
+    File.open(TALLY_DUMP, 'w'){_1.puts YAML.dump(TALLY)}
   end
 
   def initialize
