@@ -13,7 +13,11 @@ class Survivor
     'Rochelle' => true,
   }
 
-  TALLY = OPTIONS.tally? && File.exist?(TALLY_DUMP) ? YAML.load(TALLY_DUMP): {}
+  TALLY = if OPTIONS.tally? && File.exist?(TALLY_DUMP)
+            YAML.load(File.read TALLY_DUMP)
+          else
+              {}
+          end
 
   Tally = Struct.new(:ff, :exposure, :pardons, :pity, :kicks,
                      :timestamp, :id) do
@@ -24,7 +28,7 @@ class Survivor
   end
 
   def tally_dump
-    File.open(TALLY_DUMP, 'w'){_1.puts YAML.dump(TALLY)}
+    File.write TALLY_DUMP, YAML.dump(TALLY)
   end
 
   def initialize
