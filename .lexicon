@@ -92,6 +92,7 @@ int
 invalid
 ip
 join
+k
 kick
 kickid
 kicks
@@ -109,6 +110,8 @@ LOG
 LOGS
 loop
 lvp
+LX
+m
 magenta
 map
 max
@@ -208,6 +211,7 @@ timestamp
 to_i
 to_s
 TrueClass
+TX
 user_info
 using
 value
