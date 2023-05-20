@@ -10,8 +10,10 @@ class Puts
 
   using Rainbow
 
+  TX = Mutex.new
+
   def terminal(string, c = :black)
-    @terminal.puts string.color c
+    TX.synchronize{ @terminal.puts string.color c }
   end
 
   CX = Mutex.new
@@ -21,16 +23,20 @@ class Puts
     CX.synchronize{ @console.puts string }
   end
 
+  LX = Mutex.new
+
   def log(string)
-    @log.puts string
+    LX.synchronize{ @log.puts string }
   end
 
   def error(string, c = :magenta)
     # n is the first 3 line numbers of the backtrace
     n = $!.backtrace[0..2].map{_1.split(':')[1]}.join(',')
-    terminal "### #{string}(#{n}) ###", c
-    terminal $!.class.to_s, c
-    terminal $!.message, c
+    k = $!.class.to_s
+    m = $!.message
+    message = "# #{k} #{string}(#{n}): #{m}"
+    terminal message, c
+    log message
   end
 end
 end
