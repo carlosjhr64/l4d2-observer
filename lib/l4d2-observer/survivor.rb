@@ -14,7 +14,7 @@ class Survivor
   }
 
   TALLY = if OPTIONS.tally? && File.exist?(TALLY_DUMP)
-            YAML.load(File.read TALLY_DUMP)
+            Marshal.load(File.read TALLY_DUMP)
           else
               {}
           end
@@ -28,7 +28,7 @@ class Survivor
   end
 
   def tally_dump
-    File.write TALLY_DUMP, YAML.dump(TALLY)
+    File.write TALLY_DUMP, Marshal.dump(TALLY)
   end
 
   def initialize

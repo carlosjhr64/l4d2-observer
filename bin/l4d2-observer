@@ -4,7 +4,6 @@
 begin
   ### Standard Library ###
   require 'pty'
-  require 'yaml'
   ### Gems ###
   require 'rainbow/refinement'
   require 'help_parser'
@@ -17,7 +16,7 @@ rescue
   exit 72
 end
 
-OPTIONS = HelpParser['1.0.230520', <<~HELP]
+OPTIONS = HelpParser['1.0.230521', <<~HELP]
   ### L4D2 Friendly Fire Observer ###
   Usage:
     l4d2-observer [:options+] [<srcds_dir>]
@@ -70,7 +69,7 @@ RANDOM_TIME = 60
 CACHE = File.expand_path '~/.cache/l4d2-observer'
 Dir.mkdir File.expand_path CACHE unless File.exist? CACHE
 LOG = File.join CACHE, 'log'
-TALLY_DUMP = File.join CACHE, 'tally.yaml'
+TALLY_DUMP = File.join CACHE, 'tally.dump'
 if File.exist? LOG
   log = LOG+'.'+Time.now.strftime('%Y%m%d%H%M%S')
   File.rename(LOG, log)

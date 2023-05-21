@@ -114,6 +114,7 @@ LX
 m
 magenta
 map
+Marshal
 max
 message
 min
@@ -163,6 +164,7 @@ Rainbow
 rand
 RANDOM_TIME
 rankings
+read
 reader
 red
 register
@@ -219,8 +221,8 @@ victim
 VOTE_INTERVAL
 warn
 why
+write
 writer
 X
-YAML
 yellow
 z_difficulty
