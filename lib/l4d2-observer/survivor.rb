@@ -13,12 +13,6 @@ class Survivor
     'Rochelle' => true,
   }
 
-  TALLY = if OPTIONS.tally? && File.exist?(TALLY_DUMP)
-            Marshal.load(File.read TALLY_DUMP)
-          else
-              {}
-          end
-
   Tally = Struct.new(:ff, :exposure, :pardons, :pity, :kicks,
                      :timestamp, :id) do
     def initialize(ff:0, exposure:0, pardons:0, pity:0, kicks:0,
@@ -26,6 +20,13 @@ class Survivor
       super(ff, exposure, pardons, pity, kicks, timestamp, id)
     end
   end
+
+  # TALLY is a Hash[String, Tally]
+  TALLY = if OPTIONS.tally? && File.exist?(TALLY_DUMP)
+            Marshal.load(File.read TALLY_DUMP)
+          else
+              {}
+          end
 
   def tally_dump
     File.write TALLY_DUMP, Marshal.dump(TALLY)
