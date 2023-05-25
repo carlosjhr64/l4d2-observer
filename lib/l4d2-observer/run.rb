@@ -3,6 +3,7 @@ module L4D2Observer
   SURVIVOR = Survivor.new
 
   def self.run
+    PUTS.terminal VERSION
     File.open(LOG, 'a') do |log|
       PUTS.log = log
       # Observer spawns the server and procedes to read it's output.
