@@ -6,6 +6,7 @@ module L4D2Observer
     PUTS.terminal VERSION
     File.open(LOG, 'a') do |log|
       PUTS.log = log
+      PUTS.log "# #{$0} #{VERSION} started at #{Time.now}"
       # Observer spawns the server and procedes to read it's output.
       Observer.new
       # When the server terminates and Observer reads it's last line,
