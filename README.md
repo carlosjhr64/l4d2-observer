@@ -112,8 +112,8 @@ mode. The vote suppression is meant to stop server hijacking.
 
 If the game's admin leaves or is kicked,
 the longest playing player is assigned as the new admin.
-The sole job is to kick idle trolls.
-The idle kick command must be entered exactly or
+The job is to kick idle and name changing trolls.
+The command must be entered exactly or
 the admin will get kicked for chat!
 To kick player number 1, 2, 3, or 4 respectively:
 
@@ -121,6 +121,10 @@ To kick player number 1, 2, 3, or 4 respectively:
 * `say !idle2`
 * `say !idle3`
 * `say !idle4`
+
+To check for name changers:
+
+* `say !users`
 ```
 ## FLOWCHART
 
