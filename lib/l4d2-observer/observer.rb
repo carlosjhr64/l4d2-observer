@@ -161,7 +161,8 @@ class Observer
   end
 
   def dropped(dropped, why)
-    SURVIVOR.delete dropped
+    return unless SURVIVOR.delete dropped
+
     SURVIVOR.set_pardons(dropped, 0) # Pardons are for staying.
     if SURVIVOR.playtime(dropped) < VOTE_INTERVAL
       # Players who leave before the vote interval are tallied as a kick.
@@ -267,6 +268,10 @@ class Observer
       # A player has disconnected from the server.
       PUTS.terminal line, :blue
       dropped($1, $2) # dropped,why = $1,$2
+    when /^Can't kick "(.*)", name not found$/
+      # Player changed their name and left?
+      PUTS.terminal line, :red
+      dropped($1, 'kicked for name change')
     when '---- Host_Changelevel ----'
       # Players made it to the safe room.
       PUTS.terminal line, :yellow
@@ -291,6 +296,9 @@ class Observer
       if (name = SURVIVOR.names[$1.to_i - 1]) && name != @admin
         PUTS.console kick!(name, 'kicked for idle')
       end
+    when /\b#{@admin}: !users$/
+      PUTS.terminal line, :red
+      PUTS.console 'users'
     else
       # The sever config allows one to disable voice chat.
       # But text chat is still available(can't be disabled).
